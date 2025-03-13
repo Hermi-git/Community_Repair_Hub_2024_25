@@ -5,7 +5,7 @@ Community Repair Hub is a mobile application designed to help citizens report an
 
 1️.Issue Reporting & Tracking
 
--Users can report broken public infrastructure with a photo, description, and location.
+-Users can report broken public infrastructure with a photo and description.
 -Reports can be updated or deleted by the user before they are resolved.
 -Each report has a status indicator (Pending, In Progress, Resolved).
 
@@ -27,6 +27,8 @@ Community Repair Hub is a mobile application designed to help citizens report an
 5️. Testing
 
 - Includes Unit, Widget, and Integration tests to ensure app stability.
+
+  
 Group Members
 
  | Name               | ID         |
