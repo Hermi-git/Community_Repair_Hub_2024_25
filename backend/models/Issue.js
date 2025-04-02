@@ -1,4 +1,17 @@
 import mongoose from "mongoose";
+
+const citySpecificAreas = {
+  "Addis Ababa": ["Bole", "Lideta", "Piazza", "Arat Kilo", "Megenagna", "Mexico", "Sar Bet", "Summit", "CMC"],
+  "Adama": ["Dabe Laga", "Fincha’a", "Geda", "Loke", "Boku", "Bulbula"],
+  "Bahir Dar": ["Kebel 03", "Kebel 14", "Shumabo", "Tana", "St. Giorgis"],
+  "Mekelle": ["Hawelti", "Adi Haki", "Quiha", "Aynalem", "Enda Mariam"],
+  "Hawassa": ["Tabor", "Piassa", "Dume", "Misrak", "Bahir Dar Sefer"],
+  "Jigjiga": ["Ayrub", "Kebele 01", "Kebele 03", "Barwaaqo", "Gurmad"],
+  "Assosa": ["Homosha", "Mandura", "Menge", "Debre Zeit", "Yaso"],
+  "Gambella": ["Itang", "Abobo", "Pinyudo", "Jikawo", "Makuey"],
+  "Semera": ["Jegol", "Aboker", "Sofi", "Shenkor", "Hakim", "Dubti", "Logiya", "Awash", "Gawane", "Dewe"]
+};
+
 const issueSchema = new mongoose.Schema({
     category:{
         type:String,
@@ -6,77 +19,18 @@ const issueSchema = new mongoose.Schema({
     locations: {
           city: {
             type:String,
-            enum:[
-            "Addis Ababa",
-            "Adama",
-            "Bahir Dar",
-            "Mekelle",
-            "Hawassa",
-            "Jigjiga",
-            "Assosa",
-            "Gambella",
-            "Semera"
-            ]
+            required:true,
+            enum:Object.keys(citySpecificAreas),
           },
           specficArea:{
             type:String,
-            enum:[
-              "Bole",
-              "Lideta",
-              "Piazza",
-              "Arat Kilo",
-              "Megenagna",
-              "Mexico",
-              "Sar Bet",
-              "Summit",
-              "CMC",
-              "Dabe Laga",
-              "Fincha’a",
-              "Geda",
-              "Loke",
-              "Boku",
-              "Bulbula",
-              "Kebel 03",
-              "Kebel 14",
-              "Shumabo",
-              "Tana",
-              "St. Giorgis",
-              "Hawelti",
-              "Adi Haki",
-              "Quiha",
-              "Aynalem",
-              "Enda Mariam",
-              "Tabor",
-              "Piassa",
-              "Dume",
-              "Misrak",
-              "Bahir Dar Sefer",
-              "Ayrub",
-              "Kebele 01",
-              "Kebele 03",
-              "Barwaaqo",
-              "Gurmad",
-              "Homosha",
-              "Mandura",
-              "Menge",
-              "Debre Zeit",
-              "Yaso",
-              "Itang",
-              "Abobo",
-              "Pinyudo",
-              "Jikawo",
-              "Makuey",
-              "Jegol",
-              "Aboker",
-              "Sofi",
-              "Shenkor",
-              "Hakim",
-              "Dubti",
-              "Logiya",
-              "Awash",
-              "Gawane",
-              "Dewe"
-            ]
+            required:true,
+            validate:{
+              validator:function (area){
+                return citySpecificAreas[this.locations.city]?.includes(area)
+              },
+              message:(props)=>`${props.value} is not valid area for the selected city.`,
+            }
           }
     },
     Description:{
@@ -84,6 +38,14 @@ const issueSchema = new mongoose.Schema({
     },
     Date:{
       type:Date
+    },
+    Status: {
+      type: String,
+      enum: ["In Progress", "Resolved", "Unresolved"],
+      default: "Unresolved"
+    },
+    Image:{
+      url:String,
     },
     createdAt:{
       type:Date,
@@ -93,8 +55,7 @@ const issueSchema = new mongoose.Schema({
       type:Date,
       Default:Date.now()
     }
-})
-          
+})      
 const Issues = new mongoose.model("issues",issueSchema);
 export default Issues;
 
