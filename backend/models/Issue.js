@@ -44,8 +44,8 @@ const issueSchema = new mongoose.Schema({
       enum: ["In Progress", "Resolved", "Unresolved"],
       default: "Unresolved"
     },
-    Image:{
-      url:String,
+    ImagURL:{
+      type:String,
     },
     createdAt:{
       type:Date,
