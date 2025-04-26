@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.semantics.SemanticsProperties.Text
@@ -33,7 +34,6 @@ import androidx.navigation.NavController
 import com.example.community_repair_hub.R
 
 @Composable
-
 fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
     var scrollState = rememberScrollState()
     Column(
@@ -45,25 +45,27 @@ fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
 
     ){
         Image(
-            painter = painterResource(id = R.drawable.img),
+            painter = painterResource(id = R.drawable.img_2),
             contentDescription = "Image",
-            modifier=modifier
-                .fillMaxSize()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(10.dp)
-                .height(300.dp)
+                .height(300.dp),
+            contentScale = ContentScale.Fit
         )
+
         Spacer(modifier = Modifier.height(0.dp))
         Text(
             text="Community Repair Hub",
             style = TextStyle(
-                fontSize = 40.sp,
+                fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                fontFamily = FontFamily.Cursive
+                fontFamily = FontFamily.Monospace
 
             )
         )
-        Spacer(modifier = Modifier.height(0.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text="Empowering Communities, One Fix at a Time!",
             style = TextStyle(
@@ -73,11 +75,13 @@ fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
                 fontFamily = FontFamily.Cursive
             )
         )
-        Spacer(modifier = Modifier.height(0.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Button(
-            onClick = {},
-            modifier = modifier.fillMaxSize()
-                .padding(0.dp)
+            onClick = {
+                navController.navigate("login")
+            },
+            modifier = Modifier.fillMaxWidth()
+                .padding(10.dp)
                 .height(80.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
@@ -95,11 +99,13 @@ fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
                 )
             )
         }
-        Spacer(modifier = Modifier.height(0.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         Button(
-            onClick = {},
-            modifier = modifier.fillMaxWidth()
-                .padding(0.dp)
+            onClick = {
+                navController.navigate("signup")
+            },
+            modifier = Modifier.fillMaxWidth()
+                .padding(10.dp)
                 .height(80.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
