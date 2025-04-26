@@ -8,7 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.community_repair_hub.Screen.AuthScreen
 import com.example.community_repair_hub.Screen.HomeScreen
 import com.example.community_repair_hub.Screen.LoginScreen
-import com.example.community_repair_hub.Screen.SignUpScreen
+import com.example.community_repair_hub.Screen.SignupScreen
+
 
 @Composable
 
@@ -23,13 +24,11 @@ fun AppNavigation(modifier: Modifier=Modifier){
         composable("login"){
             LoginScreen(modifier,navController)
         }
-        composable("signup"){
-            SignUpScreen(modifier,navController)
+        composable("signup") {
+            SignupScreen(modifier, navController)
         }
 
-        composable("home"){
-            HomeScreen(modifier,navController)
-        }
+
 
     }
 

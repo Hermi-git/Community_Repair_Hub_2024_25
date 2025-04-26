@@ -36,15 +36,16 @@ import com.example.community_repair_hub.R
 @Composable
 fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
     var scrollState = rememberScrollState()
+
     Column(
         modifier=Modifier.fillMaxWidth()
             .padding(16.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ){
         Image(
+
             painter = painterResource(id = R.drawable.img_2),
             contentDescription = "Image",
             modifier = Modifier
