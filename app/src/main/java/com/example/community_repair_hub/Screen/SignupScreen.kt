@@ -9,5 +9,5 @@ import androidx.navigation.NavHostController
 
 
 fun SignUpScreen(modifier: Modifier = Modifier, navController: NavHostController){
-    Text(text="Hello World")
+
 }
