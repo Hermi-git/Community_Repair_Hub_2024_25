@@ -18,5 +18,6 @@ fun AppNavigation(modifier: Modifier=Modifier){
             AuthScreen(modifier,navController)
         }
 
+
     }
 }
