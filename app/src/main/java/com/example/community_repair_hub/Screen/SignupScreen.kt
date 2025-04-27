@@ -86,7 +86,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text="Empowering Communities, One Fix at a Time!",
+            text = "Empowering Communities, One Fix at a Time!",
             style = TextStyle(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Light,
@@ -96,8 +96,8 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
         )
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value= name,
-            onValueChange = {name = it},
+            value = name,
+            onValueChange = { name = it },
             label = {
                 Text(text = "Full Name")
             },
@@ -109,11 +109,11 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 disabledIndicatorColor = Color.LightGray
             )
 
-        )
+            )
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value= email,
-            onValueChange = {email = it},
+            value = email,
+            onValueChange = { email = it },
             label = {
                 Text(text = "Email Address")
             },
@@ -128,8 +128,8 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
 
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value= password,
-            onValueChange = {password= it},
+            value = password,
+            onValueChange = { password = it },
             label = {
                 Text(text = "Password")
             },
@@ -154,9 +154,9 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             modifier = Modifier
                 .padding(bottom = 8.dp)
         )
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
-        ){
+        ) {
             RadioButton(
                 selected = selectedRole == "Citizen",
                 onClick = { selectedRole = "Citizen" },
@@ -170,7 +170,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             )
             RadioButton(
                 selected = selectedRole == "Repairteam",
-                onClick = { selectedRole = "Repairteam"},
+                onClick = { selectedRole = "Repairteam" },
                 colors = RadioButtonDefaults.colors()
             )
             Text(
@@ -299,7 +299,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             )
         ) {
             Text(
-                text="Create Account",
+                text = "Create Account",
                 style = TextStyle(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -310,8 +310,5 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
         }
 
 
-
-
     }
 }
-
