@@ -1,28 +1,57 @@
 package com.example.community_repair_hub.Screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 
@@ -30,12 +59,22 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavController) {
+    var expandedCity by remember {
+        mutableStateOf(false)
+    }
+    var selectedCity by remember { mutableStateOf("") }
+    val cities = listOf("City 1", "City 2", "City 3")
+    var expandedAddress by remember { mutableStateOf(false) }
+    var selectedAddress by remember { mutableStateOf("") }
+    val addresses = listOf("Address 1", "Address 2", "Address 3")
+    var selectedDate by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Report Issue") },
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -44,24 +83,266 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 }
             )
         }
-    ) {
-            paddingValues ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
             Box(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
-            ){
+                    .background(Color.Gray.copy(alpha = 0.3f))
+                    .clickable { /* Upload photo logic */ }
+                    .align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Upload photo",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                label = { Text("Category (e.g., Road, Electrical)") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF7CFC00),
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Location",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily.Monospace
+                ),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+            )
+            Text(
+                text = "City",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily.Monospace
+                ),
+                modifier = Modifier
+                    .padding(8.dp)
 
+            )
+            Box {
+                OutlinedTextField(
+                    value = selectedCity,
+                    onValueChange = {},
+                    label = { Text("Select City") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color(0xFF7CFC00),
+                        unfocusedIndicatorColor = Color.Gray,
+                        disabledIndicatorColor = Color.LightGray
+                    ),
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { expandedCity = true }
+                        ) {
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
+                        }
+                    }
+                )
+                DropdownMenu(
+                    expanded = expandedCity,
+                    onDismissRequest = { expandedCity = false }
+                ) {
+                    cities.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text(text = city) },
+                            onClick = {
+                                selectedCity = city
+                                expandedCity = false
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Specific Address",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily.Monospace
+                ),
+                modifier = Modifier
+                    .padding(8.dp)
+
+            )
+            Box {
+                OutlinedTextField(
+                    value = selectedAddress,
+                    onValueChange = {},
+                    label = { Text("Select Address") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color(0xFF7CFC00),
+                        unfocusedIndicatorColor = Color.Gray,
+                        disabledIndicatorColor = Color.LightGray
+                    ),
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { expandedAddress = true }) {
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
+                        }
+                    }
+                )
+                DropdownMenu(
+                    expanded = expandedAddress,
+                    onDismissRequest = { expandedAddress = false }
+                ) {
+                    addresses.forEach { address ->
+                        DropdownMenuItem(
+                            text = { Text(text = address) },
+                            onClick = {
+                                selectedAddress = address
+                                expandedAddress = false
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Description",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily.Monospace
+                ),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+            )
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                label = { Text("Description of Issue") },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF7CFC00),
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                maxLines = 5
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Date of Issue",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start,
+                    fontFamily = FontFamily.Monospace
+                ),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+            )
+            OutlinedTextField(
+                value = selectedDate,
+                onValueChange = {},
+                label = { Text("dd/MM/yyyy") },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF7CFC00),
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showDatePicker = true },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select Date"
+                        )
+                    }
+                }
+            )
+
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState()
+
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                val selectedMillis = datePickerState.selectedDateMillis
+                                if (selectedMillis != null) {
+                                    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                                    selectedDate = formatter.format(java.util.Date(selectedMillis))
+                                }
+                                showDatePicker = false
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showDatePicker = false }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+              modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "⚠️ Important Notice:\n" +
+                        "Submit accurate and clear reports to ensure timely repairs. " +
+                        "False or incomplete information may delay responses. " +
+                        "Misuse of this form will not be processed. Your cooperation helps keep our community safe.",
+                    modifier = Modifier.padding(12.dp))
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+                    .padding(10.dp)
+                    .height(60.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7CFC00),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text("Submit")
             }
         }
     }
 }
+

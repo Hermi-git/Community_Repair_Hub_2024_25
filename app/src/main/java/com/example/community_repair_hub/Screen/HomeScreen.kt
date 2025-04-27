@@ -323,7 +323,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                         navController.navigate("report")
                     },
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(20.dp)
                         .align(Alignment.End),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
