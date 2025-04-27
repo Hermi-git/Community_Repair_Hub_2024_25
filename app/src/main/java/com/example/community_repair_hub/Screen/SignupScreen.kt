@@ -209,6 +209,11 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 value = selectedRegion,
                 onValueChange = {},
                 readOnly = true,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF7CFC00),
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray
+                ),
                 label = { Text("Select Region") },
                 trailingIcon = {
                     Icon(
@@ -256,6 +261,11 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 value = selectedCity,
                 onValueChange = {},
                 readOnly = true,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color(0xFF7CFC00),
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray
+                ),
                 label = { Text("Select City") },
                 trailingIcon = {
                     Icon(
@@ -286,9 +296,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
         }
         Spacer(modifier = Modifier.height(15.dp))
         Button(
-            onClick = {
-
-            },
+            onClick = {},
             modifier = Modifier.fillMaxWidth()
                 .padding(10.dp)
                 .height(60.dp),
