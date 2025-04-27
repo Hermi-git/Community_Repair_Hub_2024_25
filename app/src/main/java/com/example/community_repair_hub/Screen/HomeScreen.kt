@@ -319,7 +319,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                 }
                 Spacer(Modifier.height(10.dp))
                 Button(
-                    onClick = {},
+                    onClick = {navController.navigate("report")},
                     modifier = Modifier
                         .padding(10.dp)
                         .align(Alignment.End),
