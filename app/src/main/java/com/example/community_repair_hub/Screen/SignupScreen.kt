@@ -103,6 +103,11 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             },
             modifier = Modifier
                 .fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF7CFC00),
+                unfocusedIndicatorColor = Color.Gray,
+                disabledIndicatorColor = Color.LightGray
+            )
 
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -113,7 +118,12 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 Text(text = "Email Address")
             },
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF7CFC00),
+                unfocusedIndicatorColor = Color.Gray,
+                disabledIndicatorColor = Color.LightGray
+            )
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -125,7 +135,12 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             },
             modifier = Modifier
                 .fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF7CFC00),
+                unfocusedIndicatorColor = Color.Gray,
+                disabledIndicatorColor = Color.LightGray
+            )
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
@@ -271,7 +286,9 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
         }
         Spacer(modifier = Modifier.height(15.dp))
         Button(
-            onClick = {},
+            onClick = {
+
+            },
             modifier = Modifier.fillMaxWidth()
                 .padding(10.dp)
                 .height(60.dp),
