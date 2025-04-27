@@ -2,11 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-<<<<<<< HEAD
-      <SelectionState runConfigName="Community_repair_hub.app">
-=======
       <SelectionState runConfigName="app">
->>>>>>> 6d0ce28774589aeff990820e9c47a1bf592e16c5
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
