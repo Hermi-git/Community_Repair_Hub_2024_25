@@ -2,12 +2,15 @@ package com.example.community_repair_hub
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.community_repair_hub.Screen.AuthScreen
 import com.example.community_repair_hub.Screen.HomeScreen
 import com.example.community_repair_hub.Screen.LoginScreen
+import com.example.community_repair_hub.Screen.ReportIssueScreen
 import com.example.community_repair_hub.Screen.SignupScreen
 
 
@@ -28,9 +31,11 @@ fun AppNavigation(modifier: Modifier=Modifier){
             SignupScreen(modifier, navController)
         }
         composable("home"){
-            HomeScreen(modifier,navController)
+            HomeScreen(modifier,navController )
         }
-
+        composable("report") {
+            ReportIssueScreen(modifier, navController)
+        }
 
 
 
