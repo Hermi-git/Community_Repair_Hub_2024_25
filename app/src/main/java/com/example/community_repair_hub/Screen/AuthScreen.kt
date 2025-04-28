@@ -46,7 +46,7 @@ fun AuthScreen(modifier: Modifier=Modifier,navController: NavController){
     ){
         Image(
 
-            painter = painterResource(id = R.drawable.img_2),
+            painter = painterResource(id = R.drawable.community1),
             contentDescription = "Image",
             modifier = Modifier
                 .fillMaxWidth()

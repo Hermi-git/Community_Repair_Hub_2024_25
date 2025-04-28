@@ -29,6 +29,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -59,12 +60,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
-    var searchValue by remember{
-        mutableStateOf("")
-    }
+    val brandGreen = Color(0xFF7CFC00)
+    var searchValue by remember { mutableStateOf("") }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var SState = rememberScrollState()
+    val scrollState = rememberScrollState()
+
     NavDrawer(navController = navController, drawerState = drawerState) {
         Scaffold(
             topBar = {
@@ -78,11 +79,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {
-                                if (drawerState.isClosed) {
-                                    drawerState.open()
-                                } else {
-                                    drawerState.close()
-                                }
+                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
                             }
                         }) {
                             Icon(
@@ -104,7 +101,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF00C853)
+                        containerColor = brandGreen
                     )
                 )
             },
@@ -112,247 +109,101 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
-                        .verticalScroll(SState)
+                        .verticalScroll(scrollState)
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Spacer(Modifier.height(5.dp))
+                    Spacer(Modifier.height(8.dp))
+
                     OutlinedTextField(
                         value = searchValue,
                         onValueChange = { searchValue = it },
-                        label = { Text("Search here ...") },
+                        label = { Text("Search here...") },
                         colors = TextFieldDefaults.colors(
-                            unfocusedIndicatorColor = Color.Transparent, //
-                            focusedIndicatorColor = Color(0xFF7CFC00),
-                            disabledIndicatorColor = Color.Transparent
+                            focusedIndicatorColor = brandGreen,
+                            unfocusedIndicatorColor = Color.LightGray,
+                            focusedLabelColor = brandGreen,
+                            cursorColor = brandGreen
                         ),
                         modifier = Modifier
-                            .padding(20.dp)
                             .fillMaxWidth()
                     )
-                    Spacer(Modifier.height(10.dp))
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 8.dp
-                        ),
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_3),
-                                contentDescription = "Issue Image",
-                                modifier = Modifier
-                                    .height(150.dp)
 
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
+                    Spacer(Modifier.height(16.dp))
 
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Category: Road",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Location: Garment, AA",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Issue Date: 3/17/2025",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "View Detail",
-                                    fontSize = 20.sp,
-                                    color = Color(0XFFE6FAEE),
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .padding(top = 8.dp)
-                                        .align(Alignment.End)
-                                        .clickable { navController.navigate("signup") },
-                                )
-                            }
-                        }
+                    repeat(3) {
+                        IssueCard(navController = navController)
+                        Spacer(Modifier.height(16.dp))
                     }
-                    Spacer(Modifier.height(10.dp))
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
 
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 8.dp,
-
-                            ),
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_3),
-                                contentDescription = "Issue Image",
-                                modifier = Modifier
-                                    .height(150.dp)
-
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Category: Road",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Location: Garment, AA",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Issue Date: 3/17/2025",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "View Detail",
-                                    fontSize = 20.sp,
-                                    color = Color(0XFFE6FAEE),
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .padding(top = 8.dp)
-                                        .align(Alignment.End)
-                                        .clickable { navController.navigate("signup") },
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 8.dp
-                        ),
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_3),
-                                contentDescription = "Issue Image",
-                                modifier = Modifier
-                                    .height(150.dp)
-
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Category: Road",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Location: Garment, AA",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "Issue Date: 3/17/2025",
-                                    style = TextStyle(
-                                        fontSize = 20.sp
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "View Detail",
-                                    fontSize = 20.sp,
-                                    color = Color(0XFFE6FAEE),
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .padding(top = 8.dp)
-                                        .align(Alignment.End)
-                                        .clickable { navController.navigate("signup") },
-                                )
-                            }
-                        }
-
-                    }
-                    Spacer(Modifier.height(10.dp))
                     Button(
-                        onClick = {
-                            navController.navigate("report")
-                        },
+                        onClick = { navController.navigate("report") },
                         modifier = Modifier
-                            .padding(10.dp)
-                            .align(Alignment.End),
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0XFFE6FAEE),
+                            containerColor = brandGreen,
                             contentColor = Color.Black
                         )
                     ) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
-                        Text(text = "Add Issue")
+                        Spacer(Modifier.width(8.dp))
+                        Text(text = "Add Issue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         )
+    }
+}
+
+@Composable
+fun IssueCard(navController: NavController) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_3),
+                contentDescription = "Issue Image",
+                modifier = Modifier
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            )
+
+            Spacer(Modifier.width(16.dp))
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Category: Road", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(8.dp))
+                Text(text = "Location: Garment, AA", fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(text = "Issue Date: 3/17/2025", fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "View Detail",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable { navController.navigate("viewdetail") }
+                )
+            }
+        }
     }
 }
