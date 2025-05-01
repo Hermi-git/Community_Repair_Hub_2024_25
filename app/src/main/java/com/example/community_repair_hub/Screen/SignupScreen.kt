@@ -1,7 +1,8 @@
 package com.example.community_repair_hub.Screen
 
-
+import android.widget.Toast // Import Toast for showing messages
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator // Import for loading indicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -27,12 +29,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect // Import LaunchedEffect
+import androidx.compose.runtime.collectAsState // Import collectAsState
+import androidx.compose.runtime.getValue // Import getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,41 +43,48 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
 import androidx.navigation.NavHostController
+import com.example.community_repair_hub.viewModel.SignupViewModel // Import ViewModel
 
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController) {
-    var scrollState = rememberScrollState()
-    var email by remember{
-        mutableStateOf("")
+fun SignupScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: SignupViewModel = viewModel() // 1. Get ViewModel instance
+) {
+    val scrollState = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsState() // 2. Collect UI State
+    val context = LocalContext.current // Get context for Toasts
+
+    // 5. Handle Success/Error messages (Example using Toast)
+    LaunchedEffect(key1 = uiState.signupSuccess) {
+        if (uiState.signupSuccess) {
+            Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
+            // TODO: Navigate to the next screen (e.g., Login or Home)
+            // navController.navigate("login_screen") {
+            //     popUpTo("signup_screen") { inclusive = true }
+            // }
+            viewModel.resetSignupStatus() // Reset status after handling
+        }
     }
-    var name by remember {
-        mutableStateOf("")
+    LaunchedEffect(key1 = uiState.signupError) {
+        uiState.signupError?.let {
+            Toast.makeText(context, "Error: $it", Toast.LENGTH_LONG).show()
+            viewModel.resetSignupStatus() // Reset status after handling
+        }
     }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var region by remember {
-        mutableStateOf("")
-    }
-    var city by remember {
-        mutableStateOf("")
-    }
-    var selectedRole by remember { mutableStateOf("Citizen") }
-    var expandedRegion by remember { mutableStateOf(false) }
-    var expandedCity by remember { mutableStateOf(false) }
-    var selectedRegion by remember { mutableStateOf("") }
-    var selectedCity by remember { mutableStateOf("") }
-    val regions = listOf("Region A", "Region B", "Region C", "Region D")
-    val cities = listOf("city A", "city B", "city C", "city D")
+
+    // 3. Local state variables are removed
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(40.dp)
             .verticalScroll(scrollState)
     ) {
         Text(
-            text = "Welcome  to Community Repair Hub",
+            text = "Welcome to Community Repair Hub",
             style = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = FontFamily.Monospace,
@@ -95,52 +105,47 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
+
+        // 4. Connect UI Elements
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = {
-                Text(text = "Full Name")
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
+            value = uiState.name, // Use state from ViewModel
+            onValueChange = { viewModel.onNameChange(it) }, // Call ViewModel function
+            label = { Text(text = "Full Name") },
+            modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFF7CFC00),
                 unfocusedIndicatorColor = Color.Gray,
                 disabledIndicatorColor = Color.LightGray
-            )
-
-            )
+            ),
+            singleLine = true
+        )
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = {
-                Text(text = "Email Address")
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
+            value = uiState.email, // Use state from ViewModel
+            onValueChange = { viewModel.onEmailChange(it) }, // Call ViewModel function
+            label = { Text(text = "Email Address") },
+            modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFF7CFC00),
                 unfocusedIndicatorColor = Color.Gray,
                 disabledIndicatorColor = Color.LightGray
-            )
+            ),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = {
-                Text(text = "Password")
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
+            value = uiState.password, // Use state from ViewModel
+            onValueChange = { viewModel.onPasswordChange(it) }, // Call ViewModel function
+            label = { Text(text = "Password") },
+            modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color(0xFF7CFC00),
                 unfocusedIndicatorColor = Color.Gray,
                 disabledIndicatorColor = Color.LightGray
-            )
+            ),
+            singleLine = true
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
@@ -151,34 +156,29 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 textAlign = TextAlign.Start,
                 fontFamily = FontFamily.Monospace
             ),
-            modifier = Modifier
-                .padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
-                selected = selectedRole == "Citizen",
-                onClick = { selectedRole = "Citizen" },
+                selected = uiState.selectedRole == "Citizen", // Use state from ViewModel
+                onClick = { viewModel.onRoleSelected("Citizen") }, // Call ViewModel function
                 colors = RadioButtonDefaults.colors()
             )
             Text(
                 text = "Citizen",
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .align(androidx.compose.ui.Alignment.CenterVertically)
+                modifier = Modifier.padding(end = 16.dp)
             )
             RadioButton(
-                selected = selectedRole == "Repairteam",
-                onClick = { selectedRole = "Repairteam" },
+                selected = uiState.selectedRole == "Repairteam", // Use state from ViewModel
+                onClick = { viewModel.onRoleSelected("Repairteam") }, // Call ViewModel function
                 colors = RadioButtonDefaults.colors()
             )
             Text(
-                text = "Repairing Team",
-                modifier = Modifier
-                    .align(androidx.compose.ui.Alignment.CenterVertically)
+                text = "Repairing Team"
             )
-
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
@@ -189,8 +189,7 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 textAlign = TextAlign.Start,
                 fontFamily = FontFamily.Monospace
             ),
-            modifier = Modifier
-                .padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
             text = "Region",
@@ -200,14 +199,12 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 textAlign = TextAlign.Start,
                 fontFamily = FontFamily.Monospace
             ),
-            modifier = Modifier
-                .padding(8.dp)
-
+            modifier = Modifier.padding(8.dp)
         )
         Box {
             TextField(
-                value = selectedRegion,
-                onValueChange = {},
+                value = uiState.selectedRegion, // Use state from ViewModel
+                onValueChange = {}, // Not directly changeable
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -219,25 +216,22 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { expandedRegion = true }
+                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() } // Call ViewModel function
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { expandedRegion = true }
+                    .clickable { viewModel.toggleRegionDropdown() } // Call ViewModel function
             )
 
             DropdownMenu(
-                expanded = expandedRegion,
-                onDismissRequest = { expandedRegion = false }
+                expanded = uiState.isRegionDropdownExpanded, // Use state from ViewModel
+                onDismissRequest = { viewModel.toggleRegionDropdown(false) } // Call ViewModel function
             ) {
-                regions.forEach { region ->
+                uiState.regions.forEach { region -> // Use list from ViewModel
                     DropdownMenuItem(
                         text = { Text(text = region) },
-                        onClick = {
-                            selectedRegion = region
-                            expandedRegion = false
-                        }
+                        onClick = { viewModel.onRegionSelected(region) } // Call ViewModel function
                     )
                 }
             }
@@ -252,14 +246,12 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 textAlign = TextAlign.Start,
                 fontFamily = FontFamily.Monospace
             ),
-            modifier = Modifier
-                .padding(8.dp)
-
+            modifier = Modifier.padding(8.dp)
         )
         Box {
             TextField(
-                value = selectedCity,
-                onValueChange = {},
+                value = uiState.selectedCity, // Use state from ViewModel
+                onValueChange = {}, // Not directly changeable
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -271,33 +263,42 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { expandedCity = true }
+                        modifier = Modifier.clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { expandedCity = true }
+                    .clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
             )
 
             DropdownMenu(
-                expanded = expandedCity,
-                onDismissRequest = { expandedCity = false }
+                expanded = uiState.isCityDropdownExpanded, // Use state from ViewModel
+                onDismissRequest = { viewModel.toggleCityDropdown(false) } // Call ViewModel function
             ) {
-                cities.forEach { city ->
+                uiState.cities.forEach { city -> // Use list from ViewModel
                     DropdownMenuItem(
                         text = { Text(text = city) },
-                        onClick = {
-                            selectedCity = city
-                            expandedCity = false
-                        }
+                        onClick = { viewModel.onCitySelected(city) } // Call ViewModel function
                     )
                 }
             }
         }
         Spacer(modifier = Modifier.height(15.dp))
+
+        // Show error message if signupError is not null
+        uiState.signupError?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         Button(
-            onClick = {},
-            modifier = Modifier.fillMaxWidth()
+            onClick = { viewModel.signup() }, // Call ViewModel function
+            enabled = !uiState.signupInProgress, // Disable button when signing up
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(10.dp)
                 .height(60.dp),
             shape = RoundedCornerShape(12.dp),
@@ -306,17 +307,20 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
                 contentColor = Color.Black
             )
         ) {
-            Text(
-                text = "Create Account",
-                style = TextStyle(
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.SansSerif
+            if (uiState.signupInProgress) {
+                CircularProgressIndicator(color = Color.Black) // Show loading indicator
+            } else {
+                Text(
+                    text = "Create Account",
+                    style = TextStyle(
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        fontFamily = FontFamily.SansSerif
+                    )
                 )
-            )
+            }
         }
-
-
     }
 }
+
