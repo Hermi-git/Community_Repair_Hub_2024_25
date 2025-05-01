@@ -1,0 +1,4 @@
+package com.example.community_repair_hub.viewModel
+
+class SignUpViewModel {
+}
