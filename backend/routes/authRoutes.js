@@ -1,4 +1,4 @@
-import router from 'express-promise-router';
+import router from 'express';
 import authmiddleware from '../middleware/authMiddleware.js';
 import { signup, login, logout, forgotPassword, resetPassword } from '../controllers/authController.js';
 
