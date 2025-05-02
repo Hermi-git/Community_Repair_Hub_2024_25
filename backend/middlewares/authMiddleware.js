@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { StatusCodes } from 'http-status-codes';
-
-export const authenticateToken = async (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];  
 
@@ -18,7 +17,6 @@ export const authenticateToken = async (req, res, next) => {
     }
     next();
 });
+}
 
-
-
-};
+export default authenticateToken;
