@@ -1,18 +1,35 @@
-const multer = require("multer");
-const path = require("path");
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); 
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads/')); 
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // unique name
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
-const upload = multer({ storage });
 
-app.post("/upload", upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).send("No file uploaded.");
-  res.json({ filename: req.file.filename, url: `/uploads/${req.file.filename}` });
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
+
+export default upload;
