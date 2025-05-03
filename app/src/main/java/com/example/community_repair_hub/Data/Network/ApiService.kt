@@ -4,8 +4,12 @@ import com.example.community_repair_hub.data.network.model.LoginRequest
 import com.example.community_repair_hub.data.network.model.LoginResponse
 import com.example.community_repair_hub.data.network.model.SignupRequest
 import com.example.community_repair_hub.data.network.model.SignupResponse
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 /**
  * Retrofit API interface defining the network endpoints.
@@ -28,6 +32,10 @@ interface ApiService {
     @POST("api/login") // Adjust this path to match your actual Express.js API route
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
+
+    @Multipart
+    @POST("api/upload")
+    suspend fun uploadImage(@Part image: MultipartBody.Part): ResponseBody
     // Add other API endpoints here as needed
     // Example:
     // @GET("api/users/{userId}")

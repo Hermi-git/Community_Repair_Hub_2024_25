@@ -1,5 +1,11 @@
 package com.example.community_repair_hub.Screen
 
+import android.app.Application
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -46,19 +52,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-
+import com.example.community_repair_hub.viewModel.ReportIssueViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavController) {
+    val context = LocalContext.current
+    val viewModel: ReportIssueViewModel = viewModel(
+        factory = object : ViewModelProvider.AndroidViewModelFactory(context.applicationContext as Application) {}
+    )
+
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.let {
+                selectedImageUri = it
+                viewModel.uploadImage(
+                    uri = it,
+                    onSuccess = { url -> Log.d("UPLOAD", "Image URL: $url") },
+                    onError = { error -> Log.e("UPLOAD", error) }
+                )
+            }
+        }
+    )
+
     var expandedCity by remember {
         mutableStateOf(false)
     }
@@ -97,7 +126,8 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     .size(120.dp)
                     .clip(CircleShape)
                     .background(Color.Gray.copy(alpha = 0.3f))
-                    .clickable { /* Upload photo logic */ }
+                    .clickable {imagePickerLauncher.launch(PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly))}
                     .align(Alignment.CenterHorizontally),
                 contentAlignment = Alignment.Center
             ) {
