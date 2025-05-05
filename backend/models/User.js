@@ -18,8 +18,13 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:["Citizen","Repair Team"],
+        enum:["Citizen","Repair team"],
         required:true
+    },
+    status:{
+        type:String,
+        enum:["approved","pending_repairteam","declined"],
+        default:"pending_repairteam"
     },
     resetToken:{
         type:String
