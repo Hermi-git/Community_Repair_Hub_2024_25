@@ -154,7 +154,7 @@ export const updateUser = async (req, res) => {
 export const getPendingRequests = async (req, res) => {
     try {
         const pendingRequests = await User.find(
-            { role: 'pending_repairteam' },
+            { role: 'repair_team' },
             "name email createdAt"
         ).sort({ createdAt: -1 });
 
