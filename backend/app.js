@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
+import citizenRoutes from "./routes/citizenRoute.js"
 import cors from "cors";
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
-
 app.use("/users", authRoutes);
+app.use("/citizens",citizenRoutes)
 
 export default app;
