@@ -1,11 +1,14 @@
 package com.example.community_repair_hub.Screen
 
 import android.app.Application
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -44,26 +48,32 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentDataType.Companion.Date
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.community_repair_hub.viewModel.ReportIssueViewModel
-
+import kotlinx.coroutines.delay
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,31 +83,48 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
         factory = object : ViewModelProvider.AndroidViewModelFactory(context.applicationContext as Application) {}
     )
 
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             uri?.let {
-                selectedImageUri = it
+                viewModel.imageUri = it
                 viewModel.uploadImage(
                     uri = it,
-                    onSuccess = { url -> Log.d("UPLOAD", "Image URL: $url") },
-                    onError = { error -> Log.e("UPLOAD", error) }
+                    context = context,
+                    onSuccess = { url ->
+                        Log.d("UPLOAD", "Image URL: $url")
+                        viewModel.imageUrl = url
+                    },
+                    onError = { error ->
+                        Log.e("UPLOAD", error)
+                        // Show error to user
+                    }
                 )
             }
         }
     )
 
-    var expandedCity by remember {
-        mutableStateOf(false)
-    }
-    var selectedCity by remember { mutableStateOf("") }
+    var expandedCity by remember { mutableStateOf(false) }
     val cities = listOf("City 1", "City 2", "City 3")
     var expandedAddress by remember { mutableStateOf(false) }
-    var selectedAddress by remember { mutableStateOf("") }
     val addresses = listOf("Address 1", "Address 2", "Address 3")
-    var selectedDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
+
+    // Show error/success messages
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(viewModel.successMessage) {
+        viewModel.successMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            delay(2000) // Show for 2 seconds
+            navController.popBackStack() // Go back after successful submission
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -119,29 +146,45 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 .padding(16.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
-
         ) {
+            // Image Upload Section
             Box(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
                     .background(Color.Gray.copy(alpha = 0.3f))
-                    .clickable {imagePickerLauncher.launch(PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly))}
+                    .clickable {
+                        imagePickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }
                     .align(Alignment.CenterHorizontally),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Upload photo",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(48.dp)
-                )
+                viewModel.imageUri?.let { uri ->
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = "Selected Image",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                    )
+                } ?: run {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Upload photo",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
             }
+
             Spacer(modifier = Modifier.height(24.dp))
+
+            // Category Field
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = viewModel.category,
+                onValueChange = { viewModel.category = it },
                 label = { Text("Category (e.g., Road, Electrical)") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.colors(
@@ -150,7 +193,10 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     disabledIndicatorColor = Color.LightGray
                 )
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Location Section
             Text(
                 text = "Location",
                 style = TextStyle(
@@ -159,9 +205,10 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Monospace
                 ),
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+
+            // City Dropdown
             Text(
                 text = "City",
                 style = TextStyle(
@@ -170,13 +217,12 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Monospace
                 ),
-                modifier = Modifier
-                    .padding(8.dp)
-
+                modifier = Modifier.padding(8.dp)
             )
+
             Box {
                 OutlinedTextField(
-                    value = selectedCity,
+                    value = viewModel.city,
                     onValueChange = {},
                     label = { Text("Select City") },
                     modifier = Modifier.fillMaxWidth(),
@@ -187,9 +233,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     ),
                     readOnly = true,
                     trailingIcon = {
-                        IconButton(
-                            onClick = { expandedCity = true }
-                        ) {
+                        IconButton(onClick = { expandedCity = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                         }
                     }
@@ -202,14 +246,17 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         DropdownMenuItem(
                             text = { Text(text = city) },
                             onClick = {
-                                selectedCity = city
+                                viewModel.city = city
                                 expandedCity = false
                             }
                         )
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Address Dropdown
             Text(
                 text = "Specific Address",
                 style = TextStyle(
@@ -218,13 +265,12 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Monospace
                 ),
-                modifier = Modifier
-                    .padding(8.dp)
-
+                modifier = Modifier.padding(8.dp)
             )
+
             Box {
                 OutlinedTextField(
-                    value = selectedAddress,
+                    value = viewModel.specificAddress,
                     onValueChange = {},
                     label = { Text("Select Address") },
                     modifier = Modifier.fillMaxWidth(),
@@ -248,14 +294,17 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         DropdownMenuItem(
                             text = { Text(text = address) },
                             onClick = {
-                                selectedAddress = address
+                                viewModel.specificAddress = address
                                 expandedAddress = false
                             }
                         )
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Description Field
             Text(
                 text = "Description",
                 style = TextStyle(
@@ -264,12 +313,12 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Monospace
                 ),
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = viewModel.description,
+                onValueChange = { viewModel.description = it },
                 label = { Text("Description of Issue") },
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -281,7 +330,10 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     .height(150.dp),
                 maxLines = 5
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Date Field
             Text(
                 text = "Date of Issue",
                 style = TextStyle(
@@ -290,11 +342,11 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily.Monospace
                 ),
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+
             OutlinedTextField(
-                value = selectedDate,
+                value = viewModel.date,
                 onValueChange = {},
                 label = { Text("dd/MM/yyyy") },
                 colors = TextFieldDefaults.colors(
@@ -326,8 +378,8 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             onClick = {
                                 val selectedMillis = datePickerState.selectedDateMillis
                                 if (selectedMillis != null) {
-                                    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-                                    selectedDate = formatter.format(java.util.Date(selectedMillis))
+                                    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                    viewModel.date = formatter.format(Date(selectedMillis))
                                 }
                                 showDatePicker = false
                             }
@@ -346,33 +398,52 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     DatePicker(state = datePickerState)
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
-            Card(
-              modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "⚠️ Important Notice:\n" +
-                        "Submit accurate and clear reports to ensure timely repairs. " +
-                        "False or incomplete information may delay responses. " +
-                        "Misuse of this form will not be processed. Your cooperation helps keep our community safe.",
-                    modifier = Modifier.padding(12.dp))
+
+            // Notice Card
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "⚠️ Important Notice:\n" +
+                            "Submit accurate and clear reports to ensure timely repairs. " +
+                            "False or incomplete information may delay responses. " +
+                            "Misuse of this form will not be processed. Your cooperation helps keep our community safe.",
+                    modifier = Modifier.padding(12.dp)
+                )
             }
+
             Spacer(modifier = Modifier.height(24.dp))
 
-
+            // Submit Button
             Button(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth()
+                onClick = {
+                    viewModel.submitReport(
+                        context = context,
+                        onSuccess = {
+                            // Handled by success message observer
+                        },
+                        onError = { error ->
+                            // Handled by error message observer
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(10.dp)
                     .height(60.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF7CFC00),
                     contentColor = Color.Black
-                )
+                ),
+                enabled = !viewModel.isLoading
             ) {
-                Text("Submit")
+                if (viewModel.isLoading) {
+                    CircularProgressIndicator(color = Color.White)
+                } else {
+                    Text("Submit")
+                }
             }
         }
     }
 }
-

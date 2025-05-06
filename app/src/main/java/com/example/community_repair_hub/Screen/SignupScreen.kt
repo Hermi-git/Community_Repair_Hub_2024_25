@@ -62,9 +62,9 @@ fun SignupScreen(
         if (uiState.signupSuccess) {
             Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
             // TODO: Navigate to the next screen (e.g., Login or Home)
-            // navController.navigate("login_screen") {
-            //     popUpTo("signup_screen") { inclusive = true }
-            // }
+             navController.navigate("home") {
+                 popUpTo("signup") { inclusive = true }
+             }
             viewModel.resetSignupStatus() // Reset status after handling
         }
     }
@@ -76,7 +76,6 @@ fun SignupScreen(
     }
 
     // 3. Local state variables are removed
-
     Column(
         modifier = modifier
             .fillMaxSize()

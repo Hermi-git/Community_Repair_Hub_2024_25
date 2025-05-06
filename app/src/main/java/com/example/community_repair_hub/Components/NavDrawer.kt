@@ -84,7 +84,7 @@ fun NavDrawer(modifier: Modifier=Modifier,
                         label = { Text("Report Issue") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Warning, contentDescription = null) },
-                        onClick = { }
+                        onClick = {navController.navigate("report") }
                     )
                     NavigationDrawerItem(label = { Text("My Report") },
                     selected = false,
@@ -98,7 +98,9 @@ fun NavDrawer(modifier: Modifier=Modifier,
 
                     Spacer(Modifier.height(50.dp))
                     Button(
-                        onClick = { /* Action for the button */ },
+                        onClick = {
+                            navController.navigate("auth")
+                        },
                         modifier = Modifier
                             .padding(10.dp)
                             .fillMaxWidth(), // Make the button fill the w
