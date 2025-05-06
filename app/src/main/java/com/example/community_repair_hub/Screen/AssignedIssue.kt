@@ -147,8 +147,6 @@ fun IssueCard(issue: Issue, brandGreen: Color) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AssignedIssuesPreview() {
-    AssignedIssuesScreen(navController = rememberNavController())
-}
+
+
+

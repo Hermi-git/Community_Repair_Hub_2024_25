@@ -2,6 +2,26 @@ import User from "../models/User.js"
 import Issues from "../models/Issue.js"
 
 
+export const getIssues = async (req, res) => {
+    try {
+        const issues = await Issues.find().sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "All issues retrieved successfully",
+            data: issues
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to retrieve issues",
+            error: error.message
+        });
+    }
+};
+
+
+
 export const reportIssue = async(req,res)=>{
     const {imageURL,category,city,specificAdress,description,Date} = req.body
     try {

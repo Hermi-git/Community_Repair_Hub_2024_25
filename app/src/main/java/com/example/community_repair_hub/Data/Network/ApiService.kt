@@ -1,5 +1,6 @@
 package com.example.community_repair_hub.data.network
 
+import com.example.community_repair_hub.Data.Network.Model.IssueResponse
 import com.example.community_repair_hub.data.network.model.LoginRequest
 import com.example.community_repair_hub.data.network.model.LoginResponse
 import com.example.community_repair_hub.data.network.model.SignupRequest
@@ -25,7 +26,6 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<ResponseBody>
 
-
     @Multipart
     @POST("api/reports")
     suspend fun submitReport(
@@ -33,4 +33,8 @@ interface ApiService {
         @Part("description") description: RequestBody,
         @Part image: MultipartBody.Part
     ): Response<ResponseBody>
+
+    @GET("citizens/issues")
+    suspend fun getIssues(): Response<List<IssueResponse>>
+
 }
