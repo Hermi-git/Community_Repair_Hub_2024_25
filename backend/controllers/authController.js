@@ -68,10 +68,7 @@ export const login = async (req, res) => {
     }
 
     try {
-        let user = await User.findOne({ email });
-        if (!user) {
-            user = await Admin.findOne({ email });
-        }
+        let user = await User.findOne({ email }) || await Admin.findOne({ email });
         if (!user) {
             return res.status(StatusCodes.UNAUTHORIZED).json({
                 success: false,
@@ -84,12 +81,18 @@ export const login = async (req, res) => {
             return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Invalid credentials" });
         }
 
-        generateWebToken(res, user._id, user.role);
+        const token = generateWebToken(user._id, user.role);
 
         return res.status(StatusCodes.OK).json({
             msg: "User logged in successfully",
-            username: user.name,
-            role: user.role,
+            token, 
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                imageUrl: user.imageUrl
+            }
         });
 
     } catch (error) {
@@ -97,6 +100,7 @@ export const login = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: "Something went wrong, try again later!" });
     }
 };
+
 
 export const logout = async (req, res) => {
     try {
