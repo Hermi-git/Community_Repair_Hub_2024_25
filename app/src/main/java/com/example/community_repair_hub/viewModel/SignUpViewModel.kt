@@ -1,10 +1,11 @@
 package com.example.community_repair_hub.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.community_repair_hub.data.network.ApiService
 import com.example.community_repair_hub.data.network.RetrofitClient
 import com.example.community_repair_hub.data.network.model.SignupRequest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,8 +22,8 @@ data class SignupUiState(
     val selectedCity: String = "",
     val isRegionDropdownExpanded: Boolean = false,
     val isCityDropdownExpanded: Boolean = false,
-    val regions: List<String> = listOf("Region A", "Region B", "Region C", "Region D"), // Example data, consider moving to repository
-    val cities: List<String> = listOf("city A", "city B", "city C", "city D"), // Example data, consider moving to repository
+    val regions: List<String> = listOf("Region A", "Region B", "Region C", "Region D"),
+    val cities: List<String> = listOf("city A", "city B", "city C", "city D"),
     val signupInProgress: Boolean = false,
     val signupError: String? = null,
     val signupSuccess: Boolean = false
@@ -35,7 +36,12 @@ class SignupViewModel : ViewModel() {
     private val apiService = RetrofitClient.instance
 
     fun onNameChange(newName: String) {
-        _uiState.update { it.copy(name = newName, signupError = null) } // Clear error on input change
+        _uiState.update {
+            it.copy(
+                name = newName,
+                signupError = null
+            )
+        }
     }
 
     fun onEmailChange(newEmail: String) {
@@ -51,14 +57,24 @@ class SignupViewModel : ViewModel() {
     }
 
     fun onRegionSelected(region: String) {
-        _uiState.update { it.copy(selectedRegion = region, isRegionDropdownExpanded = false, signupError = null) }
-        // TODO: Potentially load/filter cities based on the selected region here if needed
-        // Example: Load cities for the selected region from a repository
-        // _uiState.update { it.copy(cities = repository.getCitiesForRegion(region)) }
+        _uiState.update {
+            it.copy(
+                selectedRegion = region,
+                isRegionDropdownExpanded = false,
+                signupError = null
+            )
+        }
+        // You could dynamically load cities based on region here.
     }
 
     fun onCitySelected(city: String) {
-        _uiState.update { it.copy(selectedCity = city, isCityDropdownExpanded = false, signupError = null) }
+        _uiState.update {
+            it.copy(
+                selectedCity = city,
+                isCityDropdownExpanded = false,
+                signupError = null
+            )
+        }
     }
 
     fun toggleRegionDropdown(expanded: Boolean? = null) {
@@ -72,53 +88,89 @@ class SignupViewModel : ViewModel() {
     }
 
     fun signup() {
-        _uiState.update { it.copy(signupInProgress = true, signupError = null, signupSuccess = false) }
         val currentState = _uiState.value
 
-        // --- Validation (Keep your existing validation) ---
-        if (currentState.name.isBlank() || currentState.email.isBlank() || currentState.password.isBlank() || currentState.selectedRegion.isBlank() || currentState.selectedCity.isBlank()) {
-            _uiState.update { it.copy(signupInProgress = false, signupError = "Please fill all fields") }
+        if (currentState.name.isBlank() ||
+            currentState.email.isBlank() ||
+            currentState.password.isBlank() ||
+            currentState.selectedRegion.isBlank() ||
+            currentState.selectedCity.isBlank()
+        ) {
+            _uiState.update { it.copy(signupError = "Please fill in all fields") }
             return
         }
-        // --- Add more specific validation if needed ---
+
+        if (!currentState.email.contains("@")) {
+            _uiState.update { it.copy(signupError = "Invalid email format") }
+            return
+        }
+
+        if (currentState.password.length < 6) {
+            _uiState.update { it.copy(signupError = "Password must be at least 6 characters") }
+            return
+        }
+
+        _uiState.update {
+            it.copy(
+                signupInProgress = true,
+                signupError = null,
+                signupSuccess = false
+            )
+        }
 
         viewModelScope.launch {
+            delay(1200)
+            _uiState.update {
+                it.copy(signupInProgress = false, signupSuccess = true)
+            }
+        }
+
+        /*
+        viewModelScope.launch {
             try {
-                // 1. Create the request object from the current UI state
                 val request = SignupRequest(
                     name = currentState.name,
                     email = currentState.email,
-                    password = currentState.password, // IMPORTANT: Consider security - ideally hash password on backend
+                    password = currentState.password,
                     role = currentState.selectedRole,
                     region = currentState.selectedRegion,
                     city = currentState.selectedCity
                 )
 
-                // 2. Make the actual network call using the ApiService
                 val response = apiService.signup(request)
 
-                // 3. Process the response
                 if (response.success) {
                     _uiState.update { it.copy(signupInProgress = false, signupSuccess = true) }
-                    // Optionally reset fields after successful signup
-                    // _uiState.update { SignupUiState() }
                 } else {
-                    // Use the error message from the backend response
-                    _uiState.update { it.copy(signupInProgress = false, signupError = response.message ?: "Signup failed. Please try again.") }
+                    _uiState.update {
+                        it.copy(
+                            signupInProgress = false,
+                            signupError = response.message ?: "Signup failed"
+                        )
+                    }
                 }
-
             } catch (e: Exception) {
-                // 4. Handle exceptions (network errors, JSON parsing errors, etc.)
-                // Log the error for debugging: Log.e("SignupViewModel", "Signup failed", e)
-                _uiState.update { it.copy(signupInProgress = false, signupError = e.message ?: "An network error occurred") }
+                Log.e("SignupViewModel", "Signup failed", e)
+                _uiState.update {
+                    it.copy(signupInProgress = false, signupError = e.message ?: "Unexpected error")
+                }
             }
+        }
+        */
+    }
+
+    /** Resets just the signup status (success and error flags). */
+    fun resetSignupStatus() {
+        _uiState.update {
+            it.copy(
+                signupSuccess = false,
+                signupError = null
+            )
         }
     }
 
-
-    // Function to be called by the UI to clear the signup status (e.g., after navigating away or showing a message)
-    fun resetSignupStatus() {
-        _uiState.update { it.copy(signupSuccess = false, signupError = null) }
+    /** Optional: Fully resets the form and state back to default. */
+    fun resetForm() {
+        _uiState.value = SignupUiState()
     }
 }
-

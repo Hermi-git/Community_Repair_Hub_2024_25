@@ -11,6 +11,7 @@ import com.example.community_repair_hub.Screen.LoginScreen
 import com.example.community_repair_hub.Screen.ReportIssueScreen
 import com.example.community_repair_hub.Screen.SignupScreen
 import com.example.community_repair_hub.Screen.ViewDetailScreen
+import com.example.community_repair_hub.viewmodel.HomeViewModel
 
 
 @Composable
@@ -30,7 +31,7 @@ fun AppNavigation(modifier: Modifier=Modifier){
             SignupScreen(modifier, navController)
         }
         composable("home"){
-            HomeScreen(modifier,navController )
+            HomeScreen(modifier,navController, viewModel = HomeViewModel())
         }
         composable("report") {
             ReportIssueScreen(modifier, navController)

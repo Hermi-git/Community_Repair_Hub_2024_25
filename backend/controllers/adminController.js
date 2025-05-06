@@ -29,13 +29,13 @@ export const approveRepairTeam = async (req, res) => {
             return res.status(404).json({ message: "User not found!" });
         }
         
-        if (user.role !== 'pending_repairteam') {
+        if (user.status !== 'pending_repairteam') {
             return res.status(400).json({ 
                 message: "User is not a pending repair team member or is already approved" 
             });
         }
         
-        user.role = 'repairteam';
+        user.role = 'Repair team';
         user.status = 'approved';
         await user.save();
         
@@ -67,12 +67,12 @@ export const declineRepairTeam = async (req, res) => {
             return res.status(404).json({ message: "User not found!" });
         }
         
-        if (user.role !== 'pending_repairteam') {
+        if (user.status !== 'pending_repairteam') {
             return res.status(400).json({ 
                 message: "User is not a pending repair team member" 
             });
         }
-        user.role = 'user';
+        user.role = 'Citizen';
         user.status = 'declined';
         await user.save();
         
@@ -154,7 +154,10 @@ export const updateUser = async (req, res) => {
 export const getPendingRequests = async (req, res) => {
     try {
         const pendingRequests = await User.find(
-            { role: 'repair_team' },
+            { role: 'Repair team',
+            status: 'pending_repairteam'
+             },
+
             "name email createdAt"
         ).sort({ createdAt: -1 });
 
