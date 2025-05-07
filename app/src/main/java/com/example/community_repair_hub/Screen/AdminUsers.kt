@@ -80,7 +80,6 @@ fun AdminUsers(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2. User list with individual profile images
         val users = listOf(
             User("Amanuel Tesfaye", "Citizen", "Issue Reported: 2", R.drawable.profile1),
             User("Selam Wondimu", "Repair team", "Issue handled: 10", R.drawable.profile3),
@@ -104,7 +103,6 @@ fun AdminUsers(modifier: Modifier = Modifier) {
     }
 }
 
-// 3. UserCard composable with dynamic image
 @Composable
 fun UserCard(name: String, role: String, issueText: String, profileImageResId: Int) {
     Card(
