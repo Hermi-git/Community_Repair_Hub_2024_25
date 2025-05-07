@@ -74,10 +74,11 @@ fun AdminUsers(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         val users = listOf(
-            Triple("John Doe", "Citizen", "Issue Reported: 2"),
-            Triple("John Doe", "Repair team", "Issue handled: 10"),
-            Triple("John Doe", "Repair team", "Issue handled: 12"),
-            Triple("John Doe", "Citizen", "Issue Reported: 4")
+            Triple("Amanuel Tesfaye", "Citizen", "Issue Reported: 2"),
+            Triple("Selam Wondimu", "Repair team", "Issue handled: 10"),
+            Triple("Nahom Bekele", "Repair team", "Issue handled: 12"),
+            Triple("Mekdes Alemu", "Citizen", "Issue Reported: 4")
+
         )
 
         LazyColumn(
