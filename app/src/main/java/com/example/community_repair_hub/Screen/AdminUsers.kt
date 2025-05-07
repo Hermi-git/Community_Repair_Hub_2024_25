@@ -141,8 +141,5 @@ fun UserCard(name: String, role: String, issueText: String, profileImageResId: I
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AdminUsersPreview() {
-    AdminUsers(modifier = Modifier)
-}
+
+
