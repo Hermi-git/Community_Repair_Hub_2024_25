@@ -125,9 +125,3 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun UpdateStatusPreview() {
-    UpdateStatusScreen(navController = rememberNavController())
-}
