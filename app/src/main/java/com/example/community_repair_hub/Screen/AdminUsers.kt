@@ -22,6 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.community_repair_hub.R
 
+// 1. Define a data class for user
+data class User(
+    val name: String,
+    val role: String,
+    val issueText: String,
+    val profileImageResId: Int
+)
 
 @Composable
 fun AdminUsers(modifier: Modifier = Modifier) {
@@ -73,27 +80,33 @@ fun AdminUsers(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // 2. User list with individual profile images
         val users = listOf(
-            Triple("Amanuel Tesfaye", "Citizen", "Issue Reported: 2"),
-            Triple("Selam Wondimu", "Repair team", "Issue handled: 10"),
-            Triple("Nahom Bekele", "Repair team", "Issue handled: 12"),
-            Triple("Mekdes Alemu", "Citizen", "Issue Reported: 4")
-
+            User("Amanuel Tesfaye", "Citizen", "Issue Reported: 2", R.drawable.img_1),
+            User("Selam Wondimu", "Repair team", "Issue handled: 10", R.drawable.img_2),
+            User("Nahom Bekele", "Repair team", "Issue handled: 12", R.drawable.img_3),
+            User("Mekdes Alemu", "Citizen", "Issue Reported: 4", R.drawable.img_4)
         )
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(users) { (name, role, issueText) ->
-                UserCard(name = name, role = role, issueText = issueText)
+            items(users) { user ->
+                UserCard(
+                    name = user.name,
+                    role = user.role,
+                    issueText = user.issueText,
+                    profileImageResId = user.profileImageResId
+                )
             }
         }
     }
 }
 
+// 3. UserCard composable with dynamic image
 @Composable
-fun UserCard(name: String, role: String, issueText: String) {
+fun UserCard(name: String, role: String, issueText: String, profileImageResId: Int) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -105,7 +118,7 @@ fun UserCard(name: String, role: String, issueText: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.img_5),
+                painter = painterResource(id = profileImageResId),
                 contentDescription = null,
                 modifier = Modifier
                     .size(48.dp)
@@ -114,9 +127,7 @@ fun UserCard(name: String, role: String, issueText: String) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(text = "Name: $name", fontWeight = FontWeight.Bold)
                 Text(text = "Role: $role")
                 Text(text = issueText)
@@ -131,6 +142,7 @@ fun UserCard(name: String, role: String, issueText: String) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun AdminUsersPreview() {
