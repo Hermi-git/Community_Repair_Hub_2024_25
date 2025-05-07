@@ -82,10 +82,10 @@ fun AdminUsers(modifier: Modifier = Modifier) {
 
         // 2. User list with individual profile images
         val users = listOf(
-            User("Amanuel Tesfaye", "Citizen", "Issue Reported: 2", R.drawable.img_1),
-            User("Selam Wondimu", "Repair team", "Issue handled: 10", R.drawable.img_2),
-            User("Nahom Bekele", "Repair team", "Issue handled: 12", R.drawable.img_3),
-            User("Mekdes Alemu", "Citizen", "Issue Reported: 4", R.drawable.img_4)
+            User("Amanuel Tesfaye", "Citizen", "Issue Reported: 2", R.drawable.profile1),
+            User("Selam Wondimu", "Repair team", "Issue handled: 10", R.drawable.profile3),
+            User("Nahom Bekele", "Repair team", "Issue handled: 12", R.drawable.profile2),
+            User("Mekdes Alemu", "Citizen", "Issue Reported: 4", R.drawable.profile4)
         )
 
         LazyColumn(
