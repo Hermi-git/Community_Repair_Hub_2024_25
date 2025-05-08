@@ -2,6 +2,8 @@ package com.example.community_repair_hub.Screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.tooling.preview.Preview
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -22,6 +25,15 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         topBar = {
             TopAppBar(
                 title = { Text("Update Issue Status", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.Black
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF7CFC00))
             )
         }
@@ -29,22 +41,9 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         Column(
             modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "< Back to Details",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            Text("Select Issue Status", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
 
-            Text("Select Issue Status", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start)) // ✅ Aligned left
-
+          
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -65,6 +64,8 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                     }
                 }
             }
+
+
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -87,6 +88,8 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFEAEAEA)),
@@ -106,6 +109,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
 
             Spacer(modifier = Modifier.height(24.dp))
 
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -124,4 +128,10 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateStatusPreview() {
+    UpdateStatusScreen(navController = rememberNavController())
 }
