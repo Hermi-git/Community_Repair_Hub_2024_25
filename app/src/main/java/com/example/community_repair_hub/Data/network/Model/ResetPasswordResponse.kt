@@ -1,3 +1,6 @@
-package com.example.community_repair_hub.Data.network.Model
+package com.example.community_repair_hub.data.network.model
 
-data class ResetPasswordResponse()
+data class ResetPasswordResponse(
+    val success: Boolean = false,
+    val message: String = ""
+)
