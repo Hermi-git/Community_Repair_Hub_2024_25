@@ -7,9 +7,7 @@ import {
     updateUser,
     getPendingRequests
 } from '../controllers/adminController.js';
-
 const router = express.Router();
-
 router.get('/users', listUsers);
 router.get('/pending-requests', getPendingRequests);
 router.post('/approve-repairteam', approveRepairTeam);
