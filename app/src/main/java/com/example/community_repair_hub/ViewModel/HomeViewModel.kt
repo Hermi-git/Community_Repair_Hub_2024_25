@@ -3,12 +3,14 @@ package com.example.community_repair_hub.ViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.community_repair_hub.data.network.model.IssueResponse
-import com.example.community_repair_hub.data.network.RetrofitClient
+import com.example.community_repair_hub.data.network.repository.IssueRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val issueRepository: IssueRepository = IssueRepository()
+) : ViewModel() {
 
     private val _issues = MutableStateFlow<List<IssueResponse>>(emptyList())
     val issues: StateFlow<List<IssueResponse>> = _issues
@@ -21,19 +23,46 @@ class HomeViewModel : ViewModel() {
 
     fun fetchIssues() {
         _isLoading.value = true
+        _error.value = null
         viewModelScope.launch {
-            try {
-                val response = RetrofitClient.instance.getIssues()
-                if (response.isSuccessful) {
-                    _issues.value = response.body() ?: emptyList()
-                } else {
-                    _error.value = "Failed: ${response.code()}"
+            issueRepository.getIssues()
+                .onSuccess { issues ->
+                    _issues.value = issues
                 }
-            } catch (e: Exception) {
-                _error.value = "Error: ${e.message}"
-            } finally {
-                _isLoading.value = false
-            }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _isLoading.value = false
+        }
+    }
+
+    fun searchByCategory(category: String) {
+        _isLoading.value = true
+        _error.value = null
+        viewModelScope.launch {
+            issueRepository.searchByCategory(category)
+                .onSuccess { issues ->
+                    _issues.value = issues
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _isLoading.value = false
+        }
+    }
+
+    fun searchByLocation(location: String) {
+        _isLoading.value = true
+        _error.value = null
+        viewModelScope.launch {
+            issueRepository.searchByLocation(location)
+                .onSuccess { issues ->
+                    _issues.value = issues
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _isLoading.value = false
         }
     }
 }
