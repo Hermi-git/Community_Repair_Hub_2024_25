@@ -73,24 +73,25 @@ fun AdminApprovalScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         val users = listOf(
-            Pair("John Doe", "Repair team"),
-            Pair("John Doe", "Repair team"),
-            Pair("John Doe", "Repair team")
+            Triple("Amanuel Tesfaye", "Repair team", R.drawable.profile1),
+            Triple("Selam Wondimu", "Repair team", R.drawable.profile2),
+            Triple("Nahom Bekele", "Repair team", R.drawable.profile3),
+            Triple("Mekdes Alemu", "Repair team", R.drawable.profile4)
         )
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(users) { (name, role) ->
-                ApprovalUserCard(name = name, role = role)
+            items(users) { (name, role, imageRes) ->
+                ApprovalUserCard(name = name, role = role, imageRes = imageRes)
             }
         }
     }
 }
 
 @Composable
-fun ApprovalUserCard(name: String, role: String) {
+fun ApprovalUserCard(name: String, role: String, imageRes: Int) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
@@ -103,7 +104,7 @@ fun ApprovalUserCard(name: String, role: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.img_5),
+                painter = painterResource(id = imageRes),
                 contentDescription = null,
                 modifier = Modifier
                     .size(48.dp)
