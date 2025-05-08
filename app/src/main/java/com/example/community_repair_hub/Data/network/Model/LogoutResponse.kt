@@ -1,3 +1,6 @@
-package com.example.community_repair_hub.Data.network.Model
+package com.example.community_repair_hub.data.network.model
 
-data class LogoutResponse()
+data class LogoutResponse(
+    val success: Boolean = false,
+    val message: String = ""
+)
