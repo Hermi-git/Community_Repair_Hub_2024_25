@@ -24,9 +24,9 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Update Issue Status", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                title = { Text("Update Issue Status", fontSize = 24.sp, fontWeight = FontWeight.Bold) }, // ✅ Larger Title
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate("assigned_issues") }) { // ✅ Ensured navigation works
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -39,13 +39,12 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)
+            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(24.dp) // ✅ Increased padding to use space
         ) {
-            Text("Select Issue Status", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
+            Text("Select Issue Status", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
 
-          
             Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp), // ✅ Enlarged Status Boxes
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -59,15 +58,14 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                         colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF006E2E))
                     )
                     Column {
-                        Text("Fixed", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text("The issue has been resolved", fontSize = 14.sp, color = Color.Gray)
+                        Text("Fixed", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text("The issue has been resolved", fontSize = 18.sp, color = Color.Gray)
                     }
                 }
             }
 
-
             Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp), // ✅ Enlarged Status Boxes
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -81,48 +79,46 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                         colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF006E2E))
                     )
                     Column {
-                        Text("In Progress", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text("We're working on fixing this issue", fontSize = 14.sp, color = Color.Gray)
+                        Text("In Progress", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text("We're working on fixing this issue", fontSize = 18.sp, color = Color.Gray)
                     }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFEAEAEA)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Additional Notes", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                    OutlinedTextField(
-                        value = additionalNotes,
-                        onValueChange = { additionalNotes = it },
-                        placeholder = { Text("Add any details about the repair work...") },
-                        modifier = Modifier.fillMaxWidth().height(150.dp)
-                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                modifier = Modifier.fillMaxWidth().height(280.dp).padding(vertical = 8.dp), // ✅ Maximized Notes Box Size
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFEAEAEA)),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Additional Notes", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+
+                    OutlinedTextField(
+                        value = additionalNotes,
+                        onValueChange = { additionalNotes = it },
+                        placeholder = { Text("Add any details about the repair work...") },
+                        modifier = Modifier.fillMaxWidth().height(250.dp) // ✅ Increased height
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth().height(80.dp), // ✅ Enlarged Update Button Box
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         onClick = { /* Save Status */ },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7CFC00)),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().height(60.dp) // ✅ Increased button size
                     ) {
-                        Text("Update Status", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text("Update Status", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -130,8 +126,3 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun UpdateStatusPreview() {
-    UpdateStatusScreen(navController = rememberNavController())
-}
