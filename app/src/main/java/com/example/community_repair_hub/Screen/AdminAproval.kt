@@ -88,7 +88,57 @@ fun AdminApprovalScreen(modifier: Modifier = Modifier) {
 }
 
 
+@Composable
+fun ApprovalUserCard(name: String, role: String) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_5),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+            )
 
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Name: $name", fontWeight = FontWeight.Bold)
+                Text(text = "Role: $role")
+            }
+
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Button(
+                    onClick = { /* TODO: Handle accept */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C851))
+                ) {
+                    Text("Accepted", color = Color.White)
+                }
+
+                Button(
+                    onClick = { /* TODO: Handle decline */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDE3C3C))
+                ) {
+                    Text("Decline", color = Color.White)
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
