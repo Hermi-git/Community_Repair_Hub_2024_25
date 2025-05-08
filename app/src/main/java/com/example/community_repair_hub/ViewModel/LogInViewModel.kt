@@ -68,7 +68,7 @@ class LoginViewModel(
                     email = currentState.email,
                     password = currentState.password
                 )
-                Log.d("NetworkDebug", "Attempting login to: ${RetrofitClient.BASE_URL}")
+
                 Log.d("NetworkDebug", "Request payload: ${Gson().toJson(request)}")
                 Log.d("LoginViewModel", "Attempting login with email: ${currentState.email}")
                 val response = apiService.login(request)
