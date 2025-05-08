@@ -46,13 +46,21 @@ import androidx.navigation.NavHostController
 import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.ViewModel.LoginViewModel
 
+import com.example.community_repair_hub.ViewModel.LoginViewModelFactory
+import com.example.community_repair_hub.data.network.repository.AuthRepository
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(
+            tokenManager = TokenManager,
+            authRepository = AuthRepository
+        )
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -65,7 +73,7 @@ fun LoginScreen(
             Toast.makeText(context, "Login Successful! Token: ${uiState.authToken ?: "Not Received"}", Toast.LENGTH_LONG).show()
             // TODO: Securely store the uiState.authToken
             // Navigate to home screen after successful login
-            navController.navigate("home") {
+            navController.navigate("home")  {
                 // Optional: Clear back stack up to login or start destination
                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true // Avoid multiple copies of home screen
