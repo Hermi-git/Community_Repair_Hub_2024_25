@@ -74,8 +74,8 @@ fun AdminApprovalScreen(modifier: Modifier = Modifier) {
 
         val users = listOf(
             Triple("Amanuel Tesfaye", "Repair team", R.drawable.profile1),
-            Triple("Selam Wondimu", "Repair team", R.drawable.profile2),
-            Triple("Nahom Bekele", "Repair team", R.drawable.profile3),
+            Triple("Selam Wondimu", "Repair team", R.drawable.profile3),
+            Triple("Nahom Bekele", "Repair team", R.drawable.profile2),
             Triple("Mekdes Alemu", "Repair team", R.drawable.profile4)
         )
 
@@ -142,8 +142,3 @@ fun ApprovalUserCard(name: String, role: String, imageRes: Int) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AdminApprovalPreview() {
-    AdminApprovalScreen(modifier = Modifier)
-}
