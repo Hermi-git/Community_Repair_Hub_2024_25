@@ -13,7 +13,8 @@ object RetrofitClient {
     // Replace with your actual backend base URL
     // For local development with emulator: "http://10.0.2.2:YOUR_PORT/"
     // For physical device on same network: "http://YOUR_COMPUTER_IP:YOUR_PORT/"
-    private const val BASE_URL = "http://10.0.2.2:3000/" // Example: Replace with your Express server address
+    const val BASE_URL = "http://192.168.199.84:5500/" // Replace with your actual IP
+    // Example: Replace with your Express server address
 
     // Configure OkHttpClient (optional, but good for setting timeouts, interceptors, etc.)
     private val okHttpClient = OkHttpClient.Builder()

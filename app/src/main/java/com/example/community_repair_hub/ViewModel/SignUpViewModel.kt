@@ -1,11 +1,11 @@
-package com.example.community_repair_hub.viewModel
+package com.example.community_repair_hub.ViewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.data.network.RetrofitClient
 import com.example.community_repair_hub.data.network.model.SignupRequest
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +29,9 @@ data class SignupUiState(
     val signupSuccess: Boolean = false
 )
 
-class SignupViewModel : ViewModel() {
+class SignupViewModel(
+    private val tokenManager: TokenManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState: StateFlow<SignupUiState> = _uiState.asStateFlow()
@@ -64,7 +66,6 @@ class SignupViewModel : ViewModel() {
                 signupError = null
             )
         }
-        // You could dynamically load cities based on region here.
     }
 
     fun onCitySelected(city: String) {
@@ -119,14 +120,6 @@ class SignupViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            delay(1200)
-            _uiState.update {
-                it.copy(signupInProgress = false, signupSuccess = true)
-            }
-        }
-
-        /*
-        viewModelScope.launch {
             try {
                 val request = SignupRequest(
                     name = currentState.name,
@@ -140,6 +133,12 @@ class SignupViewModel : ViewModel() {
                 val response = apiService.signup(request)
 
                 if (response.success) {
+                    // ✅ Save token after successful signup
+                    response.token?.let { token:String ->
+                        tokenManager.saveToken(token)
+                    }
+
+
                     _uiState.update { it.copy(signupInProgress = false, signupSuccess = true) }
                 } else {
                     _uiState.update {
@@ -156,10 +155,8 @@ class SignupViewModel : ViewModel() {
                 }
             }
         }
-        */
     }
 
-    /** Resets just the signup status (success and error flags). */
     fun resetSignupStatus() {
         _uiState.update {
             it.copy(
@@ -169,7 +166,6 @@ class SignupViewModel : ViewModel() {
         }
     }
 
-    /** Optional: Fully resets the form and state back to default. */
     fun resetForm() {
         _uiState.value = SignupUiState()
     }

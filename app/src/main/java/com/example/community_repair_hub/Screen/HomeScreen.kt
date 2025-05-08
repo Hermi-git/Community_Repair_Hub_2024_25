@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import com.example.community_repair_hub.Components.NavDrawer
 import com.example.community_repair_hub.R
 import com.example.community_repair_hub.Components.IssueCard
-import com.example.community_repair_hub.viewmodel.HomeViewModel
+import com.example.community_repair_hub.ViewModel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,13 +40,10 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-
     val issues by viewModel.issues.collectAsState()
-
     LaunchedEffect(Unit) {
         viewModel.fetchIssues()
     }
-
     NavDrawer(navController = navController, drawerState = drawerState) {
         Scaffold(
             topBar = {
@@ -86,7 +83,6 @@ fun HomeScreen(
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Spacer(Modifier.height(8.dp))
-
                     OutlinedTextField(
                         value = searchValue,
                         onValueChange = { searchValue = it },

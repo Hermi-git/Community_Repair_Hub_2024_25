@@ -8,5 +8,6 @@ data class SignupResponse(
     val message: String,  // A message from the backend (e.g., "Signup successful" or error details)
     // Optional: Include other relevant data returned by the backend, like a user ID or token
     // val userId: String? = null,
-    // val token: String? = null
+    val token: String? = null,
+    val user:SignupRequest,
 )

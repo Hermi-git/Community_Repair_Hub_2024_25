@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.community_repair_hub.Data.Network.Model.IssueResponse
+import com.example.community_repair_hub.data.network.model.IssueResponse
 import com.example.community_repair_hub.R
 
 @Composable
@@ -47,14 +47,13 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
             )
 
             Spacer(Modifier.width(16.dp))
-
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Category: ${issue.category}")
-                Text("Location: ${issue.locations}")
-                Text("Issue Date: ${issue.Date}")
+                Text("Category: ${issue.category ?: "Unknown"}")
+                Text("Location: ${issue.locations?.city}, ${issue.locations?.specficArea}")
+                Text("Issue Date: ${issue.Date ?: "N/A"}")
                 Text(
                     text = "View Detail",
                     modifier = Modifier

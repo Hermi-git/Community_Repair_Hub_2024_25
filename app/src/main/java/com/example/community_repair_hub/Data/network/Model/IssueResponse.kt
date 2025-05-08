@@ -1,4 +1,4 @@
-package com.example.community_repair_hub.Data.Network.Model
+package com.example.community_repair_hub.data.network.model
 
 data class IssueResponse(
     val _id: String,
