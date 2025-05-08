@@ -82,11 +82,12 @@ fun AdminApprovalScreen(modifier: Modifier = Modifier) {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
+            items(users) { (name, role) ->
+                ApprovalUserCard(name = name, role = role)
+            }
         }
     }
 }
-
 
 @Composable
 fun ApprovalUserCard(name: String, role: String) {
