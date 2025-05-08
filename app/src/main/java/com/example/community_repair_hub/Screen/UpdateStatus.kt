@@ -24,9 +24,9 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Update Issue Status", fontSize = 24.sp, fontWeight = FontWeight.Bold) }, // ✅ Larger Title
+                title = { Text("Update Issue Status", fontSize = 24.sp, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate("assigned_issues") }) { // ✅ Ensured navigation works
+                    IconButton(onClick = { navController.navigate("assigned_issues") }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -39,12 +39,12 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(24.dp) // ✅ Increased padding to use space
+            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(24.dp)
         ) {
             Text("Select Issue Status", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp), // ✅ Enlarged Status Boxes
+                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -65,7 +65,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             }
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp), // ✅ Enlarged Status Boxes
+                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -88,7 +88,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             Spacer(modifier = Modifier.height(24.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(280.dp).padding(vertical = 8.dp), // ✅ Maximized Notes Box Size
+                modifier = Modifier.fillMaxWidth().height(280.dp).padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFEAEAEA)),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -99,7 +99,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                         value = additionalNotes,
                         onValueChange = { additionalNotes = it },
                         placeholder = { Text("Add any details about the repair work...") },
-                        modifier = Modifier.fillMaxWidth().height(250.dp) // ✅ Increased height
+                        modifier = Modifier.fillMaxWidth().height(250.dp)
                     )
                 }
             }
@@ -107,7 +107,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             Spacer(modifier = Modifier.height(32.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(80.dp), // ✅ Enlarged Update Button Box
+                modifier = Modifier.fillMaxWidth().height(80.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -116,7 +116,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                         onClick = { /* Save Status */ },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7CFC00)),
-                        modifier = Modifier.fillMaxWidth().height(60.dp) // ✅ Increased button size
+                        modifier = Modifier.fillMaxWidth().height(60.dp)
                     ) {
                         Text("Update Status", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -125,4 +125,5 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     }
 }
+
 

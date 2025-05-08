@@ -67,14 +67,14 @@ fun AssignedIssuesScreen(modifier: Modifier = Modifier, navController: NavHostCo
             modifier = Modifier.padding(paddingValues).padding(16.dp)
         ) {
             items(issues) { issue ->
-                IssueCard(issue, brandGreen)
-                Spacer(modifier = Modifier.height(16.dp)) // ✅ Space between issue boxes
+                IssueCard(issue, brandGreen, navController) // ✅ Pass navController
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
+        }
     }
-}
 @Composable
-fun IssueCard(issue: Issue, brandGreen: Color) {
+fun IssueCard(issue: Issue, brandGreen: Color, navController: NavHostController) { // ✅ Added navController parameter
     Card(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, brandGreen),
@@ -100,9 +100,7 @@ fun IssueCard(issue: Issue, brandGreen: Color) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Surface(
                             color = when (issue.status) {
                                 "Completed" -> Color.Green
@@ -126,12 +124,19 @@ fun IssueCard(issue: Issue, brandGreen: Color) {
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Category: ${issue.category}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = "Location: ${issue.location}",fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Location: ${issue.location}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text("Issue Date: ${issue.issueDate}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Box(modifier = Modifier.fillMaxWidth()) {
                     TextButton(
-                        onClick = { /* Navigate or update action */ },
+                        onClick = {
+                            if (issue.status == "Completed") {
+                                navController.navigate("view_details")
+                            } else {
+                                navController.navigate("update_status")
+                            }
+                        },
                         modifier = Modifier.align(Alignment.BottomEnd).height(40.dp)
                     ) {
                         Text(
@@ -139,13 +144,13 @@ fun IssueCard(issue: Issue, brandGreen: Color) {
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF568B9F)
                         )
-
                     }
                 }
             }
         }
     }
 }
+
 
 
 
