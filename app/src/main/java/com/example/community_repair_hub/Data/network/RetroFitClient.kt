@@ -10,8 +10,7 @@ import java.util.concurrent.TimeUnit
 private const val TAG = "RetrofitClient"
 
 object RetrofitClient {
-    // Use your computer's IP address
-    private const val BASE_URL = "http://192.168.175.57:5500/"
+    private const val BASE_URL = "http://192.168.1.8:5500/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

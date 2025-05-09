@@ -11,7 +11,7 @@ import com.example.community_repair_hub.Screen.ReportIssueScreen
 import com.example.community_repair_hub.Screen.SignupScreen
 import com.example.community_repair_hub.Screen.ViewDetailScreen
 import com.example.community_repair_hub.Screen.LoginScreen
-import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
+//import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
 import com.example.community_repair_hub.ViewModel.HomeViewModel
 
 
@@ -38,9 +38,9 @@ fun AppNavigation(modifier: Modifier=Modifier){
         composable("viewdetail") {
             ViewDetailScreen(modifier, navController)
         }
-        composable("repairhome") {
-            RepairTeamHomeScreen(modifier, navController)
-        }
+//        composable("repairhome") {
+//            RepairTeamHomeScreen(modifier, navController)
+//        }
 
     }
 
