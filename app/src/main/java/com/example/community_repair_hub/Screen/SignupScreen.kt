@@ -1,8 +1,7 @@
 package com.example.community_repair_hub.Screen
 
-import android.widget.Toast // Import Toast for showing messages
+import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator // Import for loading indicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -29,13 +29,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect // Import LaunchedEffect
-import androidx.compose.runtime.collectAsState // Import collectAsState
-import androidx.compose.runtime.getValue // Import getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext // Import LocalContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -43,39 +43,49 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.community_repair_hub.viewModel.SignupViewModel // Import ViewModel
+import com.example.community_repair_hub.ViewModel.SignupViewModel
+import com.example.community_repair_hub.ViewModel.SignupViewModelFactory
+import com.example.community_repair_hub.Utills.TokenManager
+import com.example.community_repair_hub.data.network.repository.AuthRepository
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: SignupViewModel = viewModel() // 1. Get ViewModel instance
+    viewModel: SignupViewModel = viewModel(
+        factory = SignupViewModelFactory(
+            tokenManager = TokenManager,
+            authRepository = AuthRepository
+        )
+    )
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
-    val uiState by viewModel.uiState.collectAsState() // 2. Collect UI State
-    val context = LocalContext.current // Get context for Toasts
 
-    // 5. Handle Success/Error messages (Example using Toast)
+    // Handle successful signup
     LaunchedEffect(key1 = uiState.signupSuccess) {
         if (uiState.signupSuccess) {
-            Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
-            // TODO: Navigate to the next screen (e.g., Login or Home)
-             navController.navigate("home") {
-                 popUpTo("signup") { inclusive = true }
-             }
-            viewModel.resetSignupStatus() // Reset status after handling
+            Toast.makeText(context, "Signup Successful! Please login.", Toast.LENGTH_SHORT).show()
+            navController.navigate("login") {
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                launchSingleTop = true
+            }
+            viewModel.resetSignupStatus()
         }
     }
+
+    // Handle signup errors
     LaunchedEffect(key1 = uiState.signupError) {
         uiState.signupError?.let {
             Toast.makeText(context, "Error: $it", Toast.LENGTH_LONG).show()
-            viewModel.resetSignupStatus() // Reset status after handling
+            viewModel.resetSignupStatus()
         }
     }
 
-    // 3. Local state variables are removed
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -105,10 +115,9 @@ fun SignupScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 4. Connect UI Elements
         OutlinedTextField(
-            value = uiState.name, // Use state from ViewModel
-            onValueChange = { viewModel.onNameChange(it) }, // Call ViewModel function
+            value = uiState.name,
+            onValueChange = { viewModel.onNameChange(it) },
             label = { Text(text = "Full Name") },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
@@ -120,8 +129,8 @@ fun SignupScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value = uiState.email, // Use state from ViewModel
-            onValueChange = { viewModel.onEmailChange(it) }, // Call ViewModel function
+            value = uiState.email,
+            onValueChange = { viewModel.onEmailChange(it) },
             label = { Text(text = "Email Address") },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors(
@@ -134,8 +143,8 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value = uiState.password, // Use state from ViewModel
-            onValueChange = { viewModel.onPasswordChange(it) }, // Call ViewModel function
+            value = uiState.password,
+            onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text(text = "Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
@@ -162,8 +171,8 @@ fun SignupScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
-                selected = uiState.selectedRole == "Citizen", // Use state from ViewModel
-                onClick = { viewModel.onRoleSelected("Citizen") }, // Call ViewModel function
+                selected = uiState.selectedRole == "Citizen",
+                onClick = { viewModel.onRoleSelected("Citizen") },
                 colors = RadioButtonDefaults.colors()
             )
             Text(
@@ -171,8 +180,8 @@ fun SignupScreen(
                 modifier = Modifier.padding(end = 16.dp)
             )
             RadioButton(
-                selected = uiState.selectedRole == "Repairteam", // Use state from ViewModel
-                onClick = { viewModel.onRoleSelected("Repairteam") }, // Call ViewModel function
+                selected = uiState.selectedRole == "Repairteam",
+                onClick = { viewModel.onRoleSelected("Repairteam") },
                 colors = RadioButtonDefaults.colors()
             )
             Text(
@@ -202,8 +211,8 @@ fun SignupScreen(
         )
         Box {
             TextField(
-                value = uiState.selectedRegion, // Use state from ViewModel
-                onValueChange = {}, // Not directly changeable
+                value = uiState.selectedRegion,
+                onValueChange = {},
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -215,22 +224,22 @@ fun SignupScreen(
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() } // Call ViewModel function
+                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.toggleRegionDropdown() } // Call ViewModel function
+                    .clickable { viewModel.toggleRegionDropdown() }
             )
 
             DropdownMenu(
-                expanded = uiState.isRegionDropdownExpanded, // Use state from ViewModel
-                onDismissRequest = { viewModel.toggleRegionDropdown(false) } // Call ViewModel function
+                expanded = uiState.isRegionDropdownExpanded,
+                onDismissRequest = { viewModel.toggleRegionDropdown(false) }
             ) {
-                uiState.regions.forEach { region -> // Use list from ViewModel
+                uiState.regions.forEach { region ->
                     DropdownMenuItem(
                         text = { Text(text = region) },
-                        onClick = { viewModel.onRegionSelected(region) } // Call ViewModel function
+                        onClick = { viewModel.onRegionSelected(region) }
                     )
                 }
             }
@@ -249,8 +258,8 @@ fun SignupScreen(
         )
         Box {
             TextField(
-                value = uiState.selectedCity, // Use state from ViewModel
-                onValueChange = {}, // Not directly changeable
+                value = uiState.selectedCity,
+                onValueChange = {},
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -262,22 +271,22 @@ fun SignupScreen(
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
+                        modifier = Modifier.clickable { viewModel.toggleCityDropdown() }
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
+                    .clickable { viewModel.toggleCityDropdown() }
             )
 
             DropdownMenu(
-                expanded = uiState.isCityDropdownExpanded, // Use state from ViewModel
-                onDismissRequest = { viewModel.toggleCityDropdown(false) } // Call ViewModel function
+                expanded = uiState.isCityDropdownExpanded,
+                onDismissRequest = { viewModel.toggleCityDropdown(false) }
             ) {
-                uiState.cities.forEach { city -> // Use list from ViewModel
+                uiState.cities.forEach { city ->
                     DropdownMenuItem(
                         text = { Text(text = city) },
-                        onClick = { viewModel.onCitySelected(city) } // Call ViewModel function
+                        onClick = { viewModel.onCitySelected(city) }
                     )
                 }
             }
@@ -294,8 +303,8 @@ fun SignupScreen(
         }
 
         Button(
-            onClick = { viewModel.signup() }, // Call ViewModel function
-            enabled = !uiState.signupInProgress, // Disable button when signing up
+            onClick = { viewModel.signup() },
+            enabled = !uiState.signupInProgress,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -307,7 +316,7 @@ fun SignupScreen(
             )
         ) {
             if (uiState.signupInProgress) {
-                CircularProgressIndicator(color = Color.Black) // Show loading indicator
+                CircularProgressIndicator(color = Color.Black)
             } else {
                 Text(
                     text = "Create Account",
@@ -322,4 +331,3 @@ fun SignupScreen(
         }
     }
 }
-

@@ -3,7 +3,6 @@ package com.example.community_repair_hub.Screen
 import android.widget.Toast // Import Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row // Import Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,18 +43,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
 import androidx.navigation.NavHostController
-import com.example.community_repair_hub.viewModel.LoginViewModel // Import LoginViewModel
+import com.example.community_repair_hub.Utills.TokenManager
+import com.example.community_repair_hub.ViewModel.LoginViewModel
+
+import com.example.community_repair_hub.ViewModel.LoginViewModelFactory
+import com.example.community_repair_hub.data.network.repository.AuthRepository
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel() // 1. Get ViewModel instance
+    viewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(
+            tokenManager = TokenManager,
+            authRepository = AuthRepository
+        )
+    )
 ) {
-    val uiState by viewModel.uiState.collectAsState() // 2. Collect UI State
-    val context = LocalContext.current // Get context for Toasts
-    val scrollState = rememberScrollState() // Add scroll state
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
 
     // 5. Handle Success/Error messages and Navigation
     LaunchedEffect(key1 = uiState.loginSuccess) {
@@ -63,7 +73,7 @@ fun LoginScreen(
             Toast.makeText(context, "Login Successful! Token: ${uiState.authToken ?: "Not Received"}", Toast.LENGTH_LONG).show()
             // TODO: Securely store the uiState.authToken
             // Navigate to home screen after successful login
-            navController.navigate("home") {
+            navController.navigate("home")  {
                 // Optional: Clear back stack up to login or start destination
                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true // Avoid multiple copies of home screen

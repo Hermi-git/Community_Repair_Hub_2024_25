@@ -14,7 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,7 +49,7 @@ fun ViewDetailScreen(modifier: Modifier, navController: NavHostController) {
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = Color.Black
                         )
@@ -67,7 +67,7 @@ fun ViewDetailScreen(modifier: Modifier, navController: NavHostController) {
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-
+            // Rest of your code remains the same
             Image(
                 painter = painterResource(id = R.drawable.img_3),
                 contentDescription = "Issue Image",
@@ -139,5 +139,3 @@ fun ViewDetailScreen(modifier: Modifier, navController: NavHostController) {
         }
     }
 }
-
-

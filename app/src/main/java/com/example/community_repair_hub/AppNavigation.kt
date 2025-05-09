@@ -7,19 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.community_repair_hub.Screen.AuthScreen
 import com.example.community_repair_hub.Screen.HomeScreen
-import com.example.community_repair_hub.Screen.LoginScreen
 import com.example.community_repair_hub.Screen.ReportIssueScreen
 import com.example.community_repair_hub.Screen.SignupScreen
 import com.example.community_repair_hub.Screen.ViewDetailScreen
-import com.example.community_repair_hub.viewmodel.HomeViewModel
+import com.example.community_repair_hub.Screen.LoginScreen
+import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
+import com.example.community_repair_hub.ViewModel.HomeViewModel
 
 
 @Composable
 
 fun AppNavigation(modifier: Modifier=Modifier){
     var navController = rememberNavController()
-
-
     NavHost(navController = navController, startDestination = "auth"){
         composable("auth"){
             AuthScreen(modifier,navController)
@@ -39,10 +38,10 @@ fun AppNavigation(modifier: Modifier=Modifier){
         composable("viewdetail") {
             ViewDetailScreen(modifier, navController)
         }
-
-
+        composable("repairhome") {
+            RepairTeamHomeScreen(modifier, navController)
+        }
 
     }
-
 
 }

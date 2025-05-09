@@ -1,4 +1,4 @@
-package com.example.community_repair_hub.viewModel
+package com.example.community_repair_hub.ViewModel
 
 import android.content.Context
 import android.net.Uri
