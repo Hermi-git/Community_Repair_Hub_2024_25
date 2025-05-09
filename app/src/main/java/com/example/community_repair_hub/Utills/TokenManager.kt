@@ -1,37 +1,51 @@
-
 package com.example.community_repair_hub.Utills
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 object TokenManager {
-    private lateinit var preferences: SharedPreferences
+    private const val PREF_NAME = "secure_prefs"
+    private const val KEY_AUTH_TOKEN = "auth_token"
+    private const val KEY_USER_ROLE = "user_role"
 
-    private const val PREF_NAME = "user_prefs"
-    private const val KEY_TOKEN = "auth_token"
-    private const val KEY_ROLE = "user_role"
+    private lateinit var encryptedPrefs: EncryptedSharedPreferences
 
     fun init(context: Context) {
-        preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        encryptedPrefs = EncryptedSharedPreferences.create(
+            context,
+            PREF_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        ) as EncryptedSharedPreferences
     }
 
     fun saveToken(token: String) {
-        preferences.edit().putString(KEY_TOKEN, token).apply()
+        encryptedPrefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
     }
 
-    fun getToken(): String? {
-        return preferences.getString(KEY_TOKEN, null)
+    fun getAuthToken(): String? {
+        return encryptedPrefs.getString(KEY_AUTH_TOKEN, null)
     }
 
     fun saveRole(role: String) {
-        preferences.edit().putString(KEY_ROLE, role).apply()
+        encryptedPrefs.edit().putString(KEY_USER_ROLE, role).apply()
     }
 
-    fun getRole(): String? {
-        return preferences.getString(KEY_ROLE, null)
+    fun getUserRole(): String? {
+        return encryptedPrefs.getString(KEY_USER_ROLE, null)
     }
 
-    fun clear() {
-        preferences.edit().clear().apply()
+    fun clearAuthData() {
+        encryptedPrefs.edit().clear().apply()
+    }
+
+    fun isLoggedIn(): Boolean {
+        return getAuthToken() != null
     }
 }
