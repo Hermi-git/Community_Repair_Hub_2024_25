@@ -1,4 +1,4 @@
-package com.example.community_repair_hub.data.network.model
+package com.example.community_repair_hub.Data.Network.Model
 
 data class IssueResponse(
     val _id: String? = null,
@@ -15,4 +15,5 @@ data class IssueResponse(
 data class Locations(
     val city: String? = null,
     val specficArea: String? = null
+
 )

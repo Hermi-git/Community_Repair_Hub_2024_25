@@ -66,6 +66,7 @@ class LoginViewModel(
                 when (val result = authRepository.login(
                     email = currentState.email,
                     password = currentState.password
+
                 )) {
                     is AuthRepository.AuthResult.Success -> {
                         Log.d(TAG, "Login successful")
@@ -85,6 +86,7 @@ class LoginViewModel(
                                 userRole = result.data.user?.role
                             )
                         }
+
                     }
 
                     is AuthRepository.AuthResult.Error -> {
