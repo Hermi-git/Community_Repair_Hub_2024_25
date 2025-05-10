@@ -1,5 +1,5 @@
 import express from 'express';
-import { getIssues, reportIssue, searchByCategory, searchByLocation } from '../controllers/citizenController.js';
+import { getIssues, reportIssue, searchByCategory, searchByLocation } from "../controllers/citizeController.js";
 
 const router = express.Router();
 

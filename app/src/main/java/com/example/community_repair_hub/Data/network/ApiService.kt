@@ -1,7 +1,7 @@
 package com.example.community_repair_hub.data.network
 
 
-import com.example.community_repair_hub.Data.Network.Model.IssueResponse
+import com.example.community_repair_hub.data.network.model.IssueResponse
 import com.example.community_repair_hub.data.network.model.LoginRequest
 import com.example.community_repair_hub.data.network.model.LoginResponse
 import com.example.community_repair_hub.data.network.model.SignupRequest
@@ -20,7 +20,17 @@ interface ApiService {
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
-    // ✅ Fixed: Now returns Response<ResponseBody> to allow isSuccessful check
+
+    @GET("issues/search/category")
+    suspend fun searchIssuesByCategory(
+        @Query("category") category: String
+    ): Response<List<IssueResponse>>
+
+    @GET("issues/search/location")
+    suspend fun searchIssuesByLocation(
+        @Query("location") location: String
+    ): Response<List<IssueResponse>>
+
     @Multipart
     @POST("api/upload")
     suspend fun uploadImage(

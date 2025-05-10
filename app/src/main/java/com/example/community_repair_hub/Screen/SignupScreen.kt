@@ -44,15 +44,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
 import androidx.navigation.NavHostController
+import com.example.community_repair_hub.Utills.TokenManager
+import com.example.community_repair_hub.ViewModel.LoginViewModel
+import com.example.community_repair_hub.ViewModel.LoginViewModelFactory
 import com.example.community_repair_hub.ViewModel.SignupViewModel
+import com.example.community_repair_hub.ViewModel.SignupViewModelFactory
 
 
 @Composable
 fun SignupScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: SignupViewModel = viewModel()
+    tokenManager: TokenManager
+
 ) {
+    val factory = SignupViewModelFactory(tokenManager)
+    val viewModel: SignupViewModel = viewModel(factory = factory)
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current

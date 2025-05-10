@@ -99,7 +99,7 @@ fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
 
                     issues.forEach { issue ->
-                        IssueCard(issue = issue, navController = navController)
+                        IssueCard(issue = issue, navController = navController, isRepairTeam = false)
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 

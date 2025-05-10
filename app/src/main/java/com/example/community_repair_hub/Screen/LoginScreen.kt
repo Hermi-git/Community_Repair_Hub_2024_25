@@ -45,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
 import androidx.navigation.NavHostController
 import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.ViewModel.LoginViewModel
+import com.example.community_repair_hub.ViewModel.LoginViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,8 +53,11 @@ import com.example.community_repair_hub.ViewModel.LoginViewModel
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
+    tokenManager: TokenManager
+//    viewModel: LoginViewModel = viewModel()
 ) {
+    val factory = LoginViewModelFactory(tokenManager)
+    val viewModel: LoginViewModel = viewModel(factory = factory)
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()

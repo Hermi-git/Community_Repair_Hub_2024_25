@@ -2,6 +2,7 @@ package com.example.community_repair_hub
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,8 +13,10 @@ import com.example.community_repair_hub.Screen.SignupScreen
 import com.example.community_repair_hub.Screen.ViewDetailScreen
 import com.example.community_repair_hub.Screen.LoginScreen
 import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
+import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.ViewModel.HomeViewModel
-
+import com.example.community_repair_hub.ViewModel.RepairDetailScreen
+import com.example.community_repair_hub.ViewModel.RepairTeamHomeViewModel
 
 @Composable
 
@@ -24,10 +27,10 @@ fun AppNavigation(modifier: Modifier=Modifier){
             AuthScreen(modifier,navController)
         }
         composable("login"){
-            LoginScreen(modifier,navController)
+            LoginScreen(modifier,navController, tokenManager= TokenManager)
         }
         composable("signup") {
-            SignupScreen(modifier, navController)
+            SignupScreen(modifier, navController, tokenManager = TokenManager)
         }
         composable("home"){
             HomeScreen(modifier,navController, viewModel = HomeViewModel())
@@ -39,7 +42,11 @@ fun AppNavigation(modifier: Modifier=Modifier){
             ViewDetailScreen(modifier, navController)
         }
         composable("repairhome") {
-            RepairTeamHomeScreen(modifier, navController)
+            RepairTeamHomeScreen(
+                modifier, navController, viewModel = RepairTeamHomeViewModel())
+        }
+        composable("repairDetail") {
+            RepairDetailScreen(modifier, navController)
         }
 
     }

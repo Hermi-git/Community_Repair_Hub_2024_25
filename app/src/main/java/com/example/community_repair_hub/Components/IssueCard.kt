@@ -25,7 +25,7 @@ import com.example.community_repair_hub.data.network.model.IssueResponse
 import com.example.community_repair_hub.R
 
 @Composable
-fun IssueCard(issue: IssueResponse, navController: NavController) {
+fun IssueCard(issue: IssueResponse, navController: NavController, isRepairTeam: Boolean) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,9 +37,9 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Example if `issue.imageUrl` exists
+
             Image(
-                painter = painterResource(id = R.drawable.img_3), // replace with AsyncImage if URL
+                painter = painterResource(id = R.drawable.img_3),
                 contentDescription = null,
                 modifier = Modifier
                     .height(150.dp)
@@ -54,11 +54,26 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
                 Text("Category: ${issue.category ?: "Unknown"}")
                 Text("Location: ${issue.locations?.city}, ${issue.locations?.specficArea}")
                 Text("Issue Date: ${issue.Date ?: "N/A"}")
+
+                // Conditional content based on `isRepairTeam`
+                if (isRepairTeam) {
+                    Text("Status: ${issue.Status ?: "Unknown"}")
+
+                }
+
+                // Conditional navigation
                 Text(
                     text = "View Detail",
                     modifier = Modifier
                         .align(Alignment.End)
-                        .clickable { navController.navigate("viewdetail/${issue._id}") }
+                        .clickable {
+                            val destination = if (isRepairTeam) {
+                                "repairDetail/${issue._id}"
+                            } else {
+                                "viewdetail/${issue._id}"
+                            }
+                            navController.navigate(destination)
+                        }
                 )
             }
         }
