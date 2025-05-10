@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -42,43 +43,49 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel // Import viewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.community_repair_hub.Utills.TokenManager
-import com.example.community_repair_hub.ViewModel.LoginViewModel
-import com.example.community_repair_hub.ViewModel.LoginViewModelFactory
 import com.example.community_repair_hub.ViewModel.SignupViewModel
 import com.example.community_repair_hub.ViewModel.SignupViewModelFactory
+import com.example.community_repair_hub.Utills.TokenManager
+import com.example.community_repair_hub.data.network.repository.AuthRepository
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    tokenManager: TokenManager
-
+    viewModel: SignupViewModel = viewModel(
+        factory = SignupViewModelFactory(
+            tokenManager = TokenManager,
+            authRepository = AuthRepository
+        )
+    )
 ) {
-    val factory = SignupViewModelFactory(tokenManager)
-    val viewModel: SignupViewModel = viewModel(factory = factory)
-    val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    // Handle successful signup
     LaunchedEffect(key1 = uiState.signupSuccess) {
         if (uiState.signupSuccess) {
-            Toast.makeText(context, "Signup Successful!", Toast.LENGTH_SHORT).show()
-            // TODO: Navigate to the next screen (e.g., Login or Home)
-             navController.navigate("home") {
-                 popUpTo("signup") { inclusive = true }
-             }
+            Toast.makeText(context, "Signup Successful! Please login.", Toast.LENGTH_SHORT).show()
+            navController.navigate("login") {
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                launchSingleTop = true
+            }
             viewModel.resetSignupStatus()
         }
     }
+
+    // Handle signup errors
     LaunchedEffect(key1 = uiState.signupError) {
         uiState.signupError?.let {
             Toast.makeText(context, "Error: $it", Toast.LENGTH_LONG).show()
             viewModel.resetSignupStatus()
         }
     }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -204,8 +211,8 @@ fun SignupScreen(
         )
         Box {
             TextField(
-                value = uiState.selectedRegion, // Use state from ViewModel
-                onValueChange = {}, // Not directly changeable
+                value = uiState.selectedRegion,
+                onValueChange = {},
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -217,7 +224,7 @@ fun SignupScreen(
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() } // Call ViewModel function
+                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
                     )
                 },
                 modifier = Modifier
@@ -251,8 +258,8 @@ fun SignupScreen(
         )
         Box {
             TextField(
-                value = uiState.selectedCity, // Use state from ViewModel
-                onValueChange = {}, // Not directly changeable
+                value = uiState.selectedCity,
+                onValueChange = {},
                 readOnly = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
@@ -264,22 +271,22 @@ fun SignupScreen(
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
+                        modifier = Modifier.clickable { viewModel.toggleCityDropdown() }
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.toggleCityDropdown() } // Call ViewModel function
+                    .clickable { viewModel.toggleCityDropdown() }
             )
 
             DropdownMenu(
-                expanded = uiState.isCityDropdownExpanded, // Use state from ViewModel
-                onDismissRequest = { viewModel.toggleCityDropdown(false) } // Call ViewModel function
+                expanded = uiState.isCityDropdownExpanded,
+                onDismissRequest = { viewModel.toggleCityDropdown(false) }
             ) {
-                uiState.cities.forEach { city -> // Use list from ViewModel
+                uiState.cities.forEach { city ->
                     DropdownMenuItem(
                         text = { Text(text = city) },
-                        onClick = { viewModel.onCitySelected(city) } // Call ViewModel function
+                        onClick = { viewModel.onCitySelected(city) }
                     )
                 }
             }
@@ -296,8 +303,8 @@ fun SignupScreen(
         }
 
         Button(
-            onClick = { viewModel.signup() }, // Call ViewModel function
-            enabled = !uiState.signupInProgress, // Disable button when signing up
+            onClick = { viewModel.signup() },
+            enabled = !uiState.signupInProgress,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -309,7 +316,7 @@ fun SignupScreen(
             )
         ) {
             if (uiState.signupInProgress) {
-                CircularProgressIndicator(color = Color.Black) // Show loading indicator
+                CircularProgressIndicator(color = Color.Black)
             } else {
                 Text(
                     text = "Create Account",
@@ -324,4 +331,3 @@ fun SignupScreen(
         }
     }
 }
-
