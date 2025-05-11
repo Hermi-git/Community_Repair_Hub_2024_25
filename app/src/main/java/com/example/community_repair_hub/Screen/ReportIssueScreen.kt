@@ -101,9 +101,31 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
     )
 
     var expandedCity by remember { mutableStateOf(false) }
-    val cities = listOf("City 1", "City 2", "City 3")
+    val cities = listOf(
+        "Addis Ababa",
+        "Adama",
+        "Bahir Dar",
+        "Mekelle",
+        "Hawassa",
+        "Jigjiga",
+        "Assosa",
+        "Gambella",
+        "Semera"
+    )
+
     var expandedAddress by remember { mutableStateOf(false) }
-    val addresses = listOf("Address 1", "Address 2", "Address 3")
+    val citySpecificAreas = mapOf(
+        "Addis Ababa" to listOf("Bole", "Lideta", "Piazza", "Arat Kilo", "Megenagna", "Mexico", "Sar Bet", "Summit", "CMC"),
+        "Adama" to listOf("Dabe Laga", "Fincha'a", "Geda", "Loke", "Boku", "Bulbula"),
+        "Bahir Dar" to listOf("Kebel 03", "Kebel 14", "Shumabo", "Tana", "St. Giorgis"),
+        "Mekelle" to listOf("Hawelti", "Adi Haki", "Quiha", "Aynalem", "Enda Mariam"),
+        "Hawassa" to listOf("Tabor", "Piassa", "Dume", "Misrak", "Bahir Dar Sefer"),
+        "Jigjiga" to listOf("Ayrub", "Kebele 01", "Kebele 03", "Barwaaqo", "Gurmad"),
+        "Assosa" to listOf("Homosha", "Mandura", "Menge", "Debre Zeit", "Yaso"),
+        "Gambella" to listOf("Itang", "Abobo", "Pinyudo", "Jikawo", "Makuey"),
+        "Semera" to listOf("Jegol", "Aboker", "Sofi", "Shenkor", "Hakim", "Dubti", "Logiya", "Awash", "Gawane", "Dewe")
+    )
+
     var showDatePicker by remember { mutableStateOf(false) }
 
     // Show error/success messages
@@ -243,6 +265,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             text = { Text(text = city) },
                             onClick = {
                                 viewModel.city = city
+                                viewModel.specificAddress = "" // Reset specific address when city changes
                                 expandedCity = false
                             }
                         )
@@ -254,7 +277,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
 
             // Address Dropdown
             Text(
-                text = "Specific Address",
+                text = "Specific Area",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
@@ -268,7 +291,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 OutlinedTextField(
                     value = viewModel.specificAddress,
                     onValueChange = {},
-                    label = { Text("Select Address") },
+                    label = { Text("Select Specific Area") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFF7CFC00),
@@ -276,6 +299,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         disabledIndicatorColor = Color.LightGray
                     ),
                     readOnly = true,
+                    enabled = viewModel.city.isNotEmpty(),
                     trailingIcon = {
                         IconButton(onClick = { expandedAddress = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
@@ -286,14 +310,22 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     expanded = expandedAddress,
                     onDismissRequest = { expandedAddress = false }
                 ) {
-                    addresses.forEach { address ->
+                    val areas = citySpecificAreas[viewModel.city] ?: emptyList()
+                    if (areas.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text(text = address) },
-                            onClick = {
-                                viewModel.specificAddress = address
-                                expandedAddress = false
-                            }
+                            text = { Text("Select a city first") },
+                            onClick = { expandedAddress = false }
                         )
+                    } else {
+                        areas.forEach { area ->
+                            DropdownMenuItem(
+                                text = { Text(text = area) },
+                                onClick = {
+                                    viewModel.specificAddress = area
+                                    expandedAddress = false
+                                }
+                            )
+                        }
                     }
                 }
             }
