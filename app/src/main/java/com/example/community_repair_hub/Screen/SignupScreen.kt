@@ -210,37 +210,76 @@ fun SignupScreen(
             modifier = Modifier.padding(8.dp)
         )
         Box {
-            TextField(
-                value = uiState.selectedRegion,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color(0xFF7CFC00),
-                    unfocusedIndicatorColor = Color.Gray,
-                    disabledIndicatorColor = Color.LightGray
-                ),
-                label = { Text("Select Region") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
+            if (uiState.isLoadingRegions) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFF7CFC00)
+                )
+            } else {
+                Column {
+                    TextField(
+                        value = uiState.selectedRegion,
+                        onValueChange = {},
+                        readOnly = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color(0xFF7CFC00),
+                            unfocusedIndicatorColor = Color.Gray,
+                            disabledIndicatorColor = Color.LightGray
+                        ),
+                        label = { Text("Select Region") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = "Dropdown Icon",
+                                modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.toggleRegionDropdown() }
                     )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.toggleRegionDropdown() }
-            )
 
-            DropdownMenu(
-                expanded = uiState.isRegionDropdownExpanded,
-                onDismissRequest = { viewModel.toggleRegionDropdown(false) }
-            ) {
-                uiState.regions.forEach { region ->
-                    DropdownMenuItem(
-                        text = { Text(text = region) },
-                        onClick = { viewModel.onRegionSelected(region) }
-                    )
+                    if (uiState.regions.isEmpty() && !uiState.isLoadingRegions) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "No regions available",
+                                color = Color.Red,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                            Button(
+                                onClick = { viewModel.loadRegionsAndCities() },
+                                modifier = Modifier.padding(top = 8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF7CFC00),
+                                    contentColor = Color.Black
+                                )
+                            ) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+
+                    DropdownMenu(
+                        expanded = uiState.isRegionDropdownExpanded,
+                        onDismissRequest = { viewModel.toggleRegionDropdown(false) }
+                    ) {
+                        if (uiState.regions.isEmpty()) {
+                            DropdownMenuItem(
+                                text = { Text("No regions available") },
+                                onClick = { }
+                            )
+                        } else {
+                            uiState.regions.forEach { region ->
+                                DropdownMenuItem(
+                                    text = { Text(text = region) },
+                                    onClick = { viewModel.onRegionSelected(region) }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -261,6 +300,7 @@ fun SignupScreen(
                 value = uiState.selectedCity,
                 onValueChange = {},
                 readOnly = true,
+                enabled = uiState.selectedRegion.isNotEmpty(),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
                     unfocusedIndicatorColor = Color.Gray,

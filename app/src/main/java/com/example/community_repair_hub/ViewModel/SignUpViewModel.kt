@@ -22,8 +22,10 @@ data class SignupUiState(
     val selectedCity: String = "",
     val isRegionDropdownExpanded: Boolean = false,
     val isCityDropdownExpanded: Boolean = false,
-    val regions: List<String> = listOf("Region A", "Region B", "Region C", "Region D"),
-    val cities: List<String> = listOf("city A", "city B", "city C", "city D"),
+    val regions: List<String> = emptyList(),
+    val cities: List<String> = emptyList(),
+    val regionCityMap: Map<String, List<String>> = emptyMap(),
+    val isLoadingRegions: Boolean = false,
     val signupInProgress: Boolean = false,
     val signupError: String? = null,
     val signupSuccess: Boolean = false
@@ -36,6 +38,34 @@ class SignupViewModel(
 
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState: StateFlow<SignupUiState> = _uiState.asStateFlow()
+
+    init {
+        loadRegionsAndCities()
+    }
+
+    fun loadRegionsAndCities() {
+        // Hardcoded regions and cities matching the backend schema
+        val regionCityMap = mapOf(
+            "Addis Ababa" to listOf("Addis Ababa"),
+            "Oromia" to listOf("Adama", "Dire Dawa", "Jimma", "Shashemene"),
+            "Amhara" to listOf("Bahir Dar", "Gondar", "Dessie", "Debre Markos"),
+            "Tigray" to listOf("Mekelle", "Shire", "Axum", "Adigrat"),
+            "Sidama" to listOf("Hawassa"),
+            "Somali" to listOf("Jigjiga", "Degehabur", "Gode"),
+            "Benishangul-Gumuz" to listOf("Assosa", "Metekel", "Kamashi"),
+            "Gambella" to listOf("Gambella", "Abobo", "Itang"),
+            "Afar" to listOf("Semera", "Dubti", "Logiya"),
+            "Southern Nations, Nationalities, and Peoples' Region (SNNPR)" to listOf("Arba Minch", "Jinka", "Wolayta Sodo")
+        )
+
+        _uiState.update {
+            it.copy(
+                regions = regionCityMap.keys.toList(),
+                regionCityMap = regionCityMap,
+                isLoadingRegions = false
+            )
+        }
+    }
 
     fun onNameChange(newName: String) {
         _uiState.update {
@@ -62,6 +92,8 @@ class SignupViewModel(
         _uiState.update {
             it.copy(
                 selectedRegion = region,
+                selectedCity = "", // Reset city when region changes
+                cities = it.regionCityMap[region] ?: emptyList(),
                 isRegionDropdownExpanded = false,
                 signupError = null
             )
@@ -112,6 +144,13 @@ class SignupViewModel(
         if (currentState.password.length < 6) {
             Log.d(TAG, "Validation failed: Password too short")
             _uiState.update { it.copy(signupError = "Password must be at least 6 characters") }
+            return
+        }
+
+        // Validate city belongs to selected region
+        val validCities = currentState.regionCityMap[currentState.selectedRegion] ?: emptyList()
+        if (!validCities.contains(currentState.selectedCity)) {
+            _uiState.update { it.copy(signupError = "Invalid city for selected region") }
             return
         }
 
