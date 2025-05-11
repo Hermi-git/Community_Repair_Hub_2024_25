@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -17,18 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.community_repair_hub.Components.IssueCard
 import com.example.community_repair_hub.Components.NavDrawer
 import com.example.community_repair_hub.R
 import com.example.community_repair_hub.ViewModel.RepairTeamHomeViewModel
-import com.example.community_repair_hub.ViewModel.SearchType
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,52 +47,67 @@ fun RepairTeamHomeScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val searchType by viewModel.searchType.collectAsState()
-    val selectedStatus by viewModel.selectedStatus.collectAsState()
 
-    // Local state for search
-    var showSearchOptions by remember { mutableStateOf(false) }
+    // Dropdown state for filtering
+    var showDropDown by remember { mutableStateOf(false) }
+    var selectedStatus by remember { mutableStateOf("All") }
+    val statusOptions = listOf("All", "Pending", "In Progress", "Completed")
 
-    // Handle error messages
-    LaunchedEffect(error) {
-        error?.let {
-            // Show error message using Snackbar or Toast
-        }
+    // Filter issues by status
+    val filteredIssues = remember(issues, selectedStatus) {
+        if (selectedStatus == "All") issues
+        else issues.filter { it.status == selectedStatus }
     }
 
-    NavDrawer(navController = navController, drawerState = drawerState) {
+    // Placeholder logic
+    val searchPlaceholder = if (selectedStatus == "All") "Search here . . ." else selectedStatus
+
+    NavDrawer(
+        navController = navController,
+        drawerState = drawerState
+    ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("Community Repair Hub", color = Color.Black) },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
-                            }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.Black)
-                        }
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = "Community Repair Hub",
+                            color = Color.Black,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
                     },
-                    actions = {
-                        IconButton(onClick = { showSearchOptions = !showSearchOptions }) {
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                                }
+                            }
+                        ) {
                             Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search",
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu",
                                 tint = Color.Black
                             )
                         }
-                        IconButton(onClick = { /* Navigate to Profile */ }) {
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { /* TODO: Navigate to Profile */ }
+                        ) {
                             Image(
                                 painter = painterResource(id = R.drawable.img_5),
                                 contentDescription = "Profile",
+                                contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = brandGreen)
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = brandGreen
+                    )
                 )
             }
         ) { paddingValues ->
@@ -102,30 +116,63 @@ fun RepairTeamHomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .background(MaterialTheme.colorScheme.background)
-                    .verticalScroll(scrollState)
+                    .padding(16.dp)
             ) {
-                // Search Bar
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { viewModel.setSearchQuery(it) },
-                    placeholder = { Text("Search here . . .", color = Color.Gray) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                        .background(brandGreen, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = brandGreen,
-                        focusedContainerColor = brandGreen,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent
+                // Search Bar with Dropdown Icon and working DropdownMenu
+                Box {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { viewModel.setSearchQuery(it) },
+                        placeholder = { Text(searchPlaceholder, color = Color(0xFF8BC34A)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp)),
+                        shape = RoundedCornerShape(8.dp),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = Color(0xFF388E3C)
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { showDropDown = !showDropDown }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Dropdown",
+                                    tint = Color(0xFF388E3C)
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color(0xFFE8F5E9),
+                            focusedContainerColor = Color(0xFFE8F5E9),
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent
+                        )
                     )
-                )
+                    DropdownMenu(
+                        expanded = showDropDown,
+                        onDismissRequest = { showDropDown = false },
+                        modifier = Modifier.background(Color.White)
+                    ) {
+                        statusOptions.forEach { status ->
+                            DropdownMenuItem(
+                                text = { Text(status) },
+                                onClick = {
+                                    selectedStatus = status
+                                    showDropDown = false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Issues List
                 if (isLoading) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = brandGreen)
@@ -134,13 +181,13 @@ fun RepairTeamHomeScreen(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(text = error ?: "An error occurred", color = Color.Red)
                     }
-                } else if (issues.isEmpty()) {
+                } else if (filteredIssues.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(text = "No issues found", style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        issues.forEach { issue ->
+                        filteredIssues.forEach { issue ->
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -154,7 +201,6 @@ fun RepairTeamHomeScreen(
                                             .fillMaxWidth()
                                             .padding(12.dp)
                                     ) {
-                                        // Issue Image
                                         Image(
                                             painter = rememberAsyncImagePainter(issue.imageURL ?: R.drawable.img_3),
                                             contentDescription = null,
@@ -163,7 +209,6 @@ fun RepairTeamHomeScreen(
                                                 .clip(RoundedCornerShape(8.dp))
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
-                                        // Issue Details
                                         Column(
                                             modifier = Modifier.weight(1f)
                                         ) {
@@ -190,9 +235,7 @@ fun RepairTeamHomeScreen(
                                                     color = brandGreen,
                                                     fontWeight = FontWeight.Bold,
                                                     fontSize = 14.sp,
-                                                    textDecoration = TextDecoration.Underline,
                                                     modifier = Modifier.clickable {
-                                                        // Navigate to details
                                                         navController.navigate("viewdetail/${issue._id}")
                                                     }
                                                 )

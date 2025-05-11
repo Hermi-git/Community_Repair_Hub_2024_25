@@ -14,7 +14,7 @@ import com.example.community_repair_hub.ViewModel.*
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    
+
     NavHost(navController = navController, startDestination = "auth") {
         composable("auth") {
             AuthScreen(modifier, navController)
@@ -55,4 +55,5 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             }
         }
     }
+
 }
