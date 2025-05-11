@@ -2,7 +2,6 @@ package com.example.community_repair_hub.Screen
 
 import android.app.Application
 import android.icu.text.SimpleDateFormat
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -39,7 +38,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,14 +53,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentDataType.Companion.Date
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +66,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.community_repair_hub.viewModel.ReportIssueViewModel
+import com.example.community_repair_hub.ViewModel.ReportIssueViewModel
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.util.Locale
@@ -105,9 +101,31 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
     )
 
     var expandedCity by remember { mutableStateOf(false) }
-    val cities = listOf("City 1", "City 2", "City 3")
+    val cities = listOf(
+        "Addis Ababa",
+        "Adama",
+        "Bahir Dar",
+        "Mekelle",
+        "Hawassa",
+        "Jigjiga",
+        "Assosa",
+        "Gambella",
+        "Semera"
+    )
+
     var expandedAddress by remember { mutableStateOf(false) }
-    val addresses = listOf("Address 1", "Address 2", "Address 3")
+    val citySpecificAreas = mapOf(
+        "Addis Ababa" to listOf("Bole", "Lideta", "Piazza", "Arat Kilo", "Megenagna", "Mexico", "Sar Bet", "Summit", "CMC"),
+        "Adama" to listOf("Dabe Laga", "Fincha'a", "Geda", "Loke", "Boku", "Bulbula"),
+        "Bahir Dar" to listOf("Kebel 03", "Kebel 14", "Shumabo", "Tana", "St. Giorgis"),
+        "Mekelle" to listOf("Hawelti", "Adi Haki", "Quiha", "Aynalem", "Enda Mariam"),
+        "Hawassa" to listOf("Tabor", "Piassa", "Dume", "Misrak", "Bahir Dar Sefer"),
+        "Jigjiga" to listOf("Ayrub", "Kebele 01", "Kebele 03", "Barwaaqo", "Gurmad"),
+        "Assosa" to listOf("Homosha", "Mandura", "Menge", "Debre Zeit", "Yaso"),
+        "Gambella" to listOf("Itang", "Abobo", "Pinyudo", "Jikawo", "Makuey"),
+        "Semera" to listOf("Jegol", "Aboker", "Sofi", "Shenkor", "Hakim", "Dubti", "Logiya", "Awash", "Gawane", "Dewe")
+    )
+
     var showDatePicker by remember { mutableStateOf(false) }
 
     // Show error/success messages
@@ -132,7 +150,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -147,7 +165,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            // Image Upload Section
+            // Rest of your code remains the same
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -247,6 +265,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             text = { Text(text = city) },
                             onClick = {
                                 viewModel.city = city
+                                viewModel.specificAddress = "" // Reset specific address when city changes
                                 expandedCity = false
                             }
                         )
@@ -258,7 +277,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
 
             // Address Dropdown
             Text(
-                text = "Specific Address",
+                text = "Specific Area",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
@@ -272,7 +291,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 OutlinedTextField(
                     value = viewModel.specificAddress,
                     onValueChange = {},
-                    label = { Text("Select Address") },
+                    label = { Text("Select Specific Area") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFF7CFC00),
@@ -280,6 +299,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         disabledIndicatorColor = Color.LightGray
                     ),
                     readOnly = true,
+                    enabled = viewModel.city.isNotEmpty(),
                     trailingIcon = {
                         IconButton(onClick = { expandedAddress = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
@@ -290,14 +310,22 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                     expanded = expandedAddress,
                     onDismissRequest = { expandedAddress = false }
                 ) {
-                    addresses.forEach { address ->
+                    val areas = citySpecificAreas[viewModel.city] ?: emptyList()
+                    if (areas.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text(text = address) },
-                            onClick = {
-                                viewModel.specificAddress = address
-                                expandedAddress = false
-                            }
+                            text = { Text("Select a city first") },
+                            onClick = { expandedAddress = false }
                         )
+                    } else {
+                        areas.forEach { area ->
+                            DropdownMenuItem(
+                                text = { Text(text = area) },
+                                onClick = {
+                                    viewModel.specificAddress = area
+                                    expandedAddress = false
+                                }
+                            )
+                        }
                     }
                 }
             }

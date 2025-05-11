@@ -13,53 +13,61 @@ const citySpecificAreas = {
 };
 
 const issueSchema = new mongoose.Schema({
-    category:{
-        type:String,
-    },
-    locations: {
-          city: {
-            type:String,
-            required:true,
-            enum:Object.keys(citySpecificAreas),
-          },
-          specficArea:{
-            type:String,
-            required:true,
-            validate:{
-              validator:function (area){
-                return citySpecificAreas[this.locations.city]?.includes(area)
-              },
-              message:(props)=>`${props.value} is not valid area for the selected city.`,
-            }
-          }
-    },
-    Description:{
-      type:String,
-    },
-    Date:{
-      type:Date
-    },
-    Status: {
+  category: {
+    type: String,
+    required: true,
+  },
+  locations: {
+    city: {
       type: String,
-      enum: ["In Progress", "Resolved", "Unresolved"],
-      default: "Unresolved"
+      required: true,
+      enum: Object.keys(citySpecificAreas),
     },
-    ImagURL:{
-      type:String,
+    specificArea: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (area) {
+          return citySpecificAreas[this.locations.city]?.includes(area);
+        },
+        message: (props) => `${props.value} is not a valid area for the selected city.`,
+      },
     },
-    createdAt:{
-      type:Date,
-      Default:Date.now()
-    },
-    updatedAt:{
-      type:Date,
-      Default:Date.now()
-    }
-})      
-const Issues = new mongoose.model("issues",issueSchema);
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  issueDate: {
+    type: Date,
+    required: true,
+},
+  status: {
+    type: String,
+    enum: ["In Progress", "Resolved", "Unresolved"],
+    default: "Unresolved",
+  },
+  imageURL: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Middleware to validate city and area relationship
+issueSchema.pre("validate", function (next) {
+  if (!citySpecificAreas[this.locations.city]?.includes(this.locations.specificArea)) {
+    this.invalidate("locations.specificArea", `${this.locations.specificArea} is not a valid area for the selected city.`);
+  }
+  next();
+});
+
+const Issues = mongoose.model("issues", issueSchema);
 export default Issues;
-
-
-        
-
-

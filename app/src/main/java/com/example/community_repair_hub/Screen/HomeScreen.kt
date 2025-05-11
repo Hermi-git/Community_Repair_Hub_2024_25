@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,13 +28,14 @@ import androidx.navigation.NavController
 import com.example.community_repair_hub.Components.NavDrawer
 import com.example.community_repair_hub.R
 import com.example.community_repair_hub.Components.IssueCard
-import com.example.community_repair_hub.viewmodel.HomeViewModel
+import com.example.community_repair_hub.ViewModel.HomeViewModel
+import com.example.community_repair_hub.data.network.model.IssueResponse
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    modifier:Modifier = Modifier,
+    modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: HomeViewModel
 ) {
@@ -39,9 +43,22 @@ fun HomeScreen(
     var searchValue by remember { mutableStateOf("") }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
-
     val issues by viewModel.issues.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    // Filter issues based on search query
+    val filteredIssues = remember(issues, searchValue) {
+        if (searchValue.isEmpty()) {
+            issues
+        } else {
+            issues.filter { issue ->
+                issue.category?.contains(searchValue, ignoreCase = true) == true ||
+                        issue.locations?.city?.contains(searchValue, ignoreCase = true) == true ||
+                        issue.description?.contains(searchValue, ignoreCase = true) == true
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchIssues()
@@ -78,49 +95,111 @@ fun HomeScreen(
                 )
             },
             content = { paddingValues ->
-                Column(
+                Box(
                     modifier = Modifier
                         .padding(paddingValues)
-                        .verticalScroll(scrollState)
+                        .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Spacer(Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = searchValue,
-                        onValueChange = { searchValue = it },
-                        label = { Text("Search here...") },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = brandGreen,
-                            unfocusedIndicatorColor = Color.LightGray,
-                            focusedLabelColor = brandGreen,
-                            cursorColor = brandGreen
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    issues.forEach { issue ->
-                        IssueCard(issue = issue, navController = navController)
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    Button(
-                        onClick = { navController.navigate("report") },
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 24.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = brandGreen,
-                            contentColor = Color.Black
-                        )
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
-                        Spacer(Modifier.width(8.dp))
-                        Text("Add Issue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        OutlinedTextField(
+                            value = searchValue,
+                            onValueChange = { searchValue = it },
+                            label = { Text("Search by category, location, or description") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Search, contentDescription = "Search")
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = brandGreen,
+                                unfocusedIndicatorColor = Color.LightGray,
+                                focusedLabelColor = brandGreen,
+                                cursorColor = brandGreen
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        when {
+                            isLoading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(color = brandGreen)
+                                }
+                            }
+                            error != null -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = error ?: "An error occurred",
+                                            color = Color.Red,
+                                            modifier = Modifier.padding(16.dp)
+                                        )
+                                        Button(
+                                            onClick = { viewModel.fetchIssues() },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = brandGreen,
+                                                contentColor = Color.Black
+                                            )
+                                        ) {
+                                            Text("Retry")
+                                        }
+                                    }
+                                }
+                            }
+                            filteredIssues.isEmpty() -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (searchValue.isEmpty())
+                                            "No issues found"
+                                        else
+                                            "No matching issues found",
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                            else -> {
+                                LazyColumn(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(filteredIssues) { issue ->
+                                        IssueCard(issue = issue, navController = navController)
+                                    }
+                                }
+                            }
+                        }
+
+                        Button(
+                            onClick = { navController.navigate("report") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = brandGreen,
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Add")
+                            Spacer(Modifier.width(8.dp))
+                            Text("Add Issue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
