@@ -3,7 +3,7 @@ package com.example.community_repair_hub.Screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +27,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate("assigned_issues") }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back",
                             tint = Color.Black
                         )
@@ -39,12 +38,23 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).fillMaxSize().padding(24.dp)
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .padding(24.dp)
         ) {
-            Text("Select Issue Status", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
+            Text(
+                "Select Issue Status",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Start)
+            )
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -65,7 +75,10 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             }
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(120.dp).padding(vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -88,7 +101,10 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             Spacer(modifier = Modifier.height(24.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(280.dp).padding(vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .padding(vertical = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFEAEAEA)),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -99,7 +115,9 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
                         value = additionalNotes,
                         onValueChange = { additionalNotes = it },
                         placeholder = { Text("Add any details about the repair work...") },
-                        modifier = Modifier.fillMaxWidth().height(250.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
                     )
                 }
             }
@@ -107,16 +125,24 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
             Spacer(modifier = Modifier.height(32.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth().height(80.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Button(
                         onClick = { /* Save Status */ },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7CFC00)),
-                        modifier = Modifier.fillMaxWidth().height(60.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
                     ) {
                         Text("Update Status", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -125,5 +151,3 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
         }
     }
 }
-
-
