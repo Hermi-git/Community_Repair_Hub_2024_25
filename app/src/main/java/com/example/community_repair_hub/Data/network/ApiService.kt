@@ -1,15 +1,6 @@
 package com.example.community_repair_hub.data.network
 
-
-import com.example.community_repair_hub.data.network.model.IssueResponse
-import com.example.community_repair_hub.data.network.model.ForgotPasswordRequest
-import com.example.community_repair_hub.data.network.model.ForgotPasswordResponse
-import com.example.community_repair_hub.data.network.model.LogoutResponse
-import com.example.community_repair_hub.data.network.model.ResetPasswordRequest
-import com.example.community_repair_hub.data.network.model.ResetPasswordResponse
 import com.example.community_repair_hub.data.network.model.*
-
-
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -56,18 +47,16 @@ interface ApiService {
 
     // Citizen endpoints
     @GET("citizens/issues")
-    suspend fun getIssues(): Response<List<IssueResponse>>
+    suspend fun getIssues(): ApiResponse<List<IssueResponse>>
 
-    @GET("citizens/issues/category")
-    suspend fun searchByCategory(@Query("category") category: String): Response<List<IssueResponse>>
+    @GET("issues/category")
+    suspend fun searchByCategory(@Query("category") category: String): ApiResponse<List<IssueResponse>>
 
-    @GET("citizens/issues/location")
-    suspend fun searchByLocation(@Query("location") location: String): Response<List<IssueResponse>>
+    @GET("issues/location")
+    suspend fun searchByLocation(@Query("location") location: String): ApiResponse<List<IssueResponse>>
 
-    @POST("citizens/report")
-    suspend fun reportIssue(
-        @Body issue: Map<String, String>
-    ): Response<Map<String, Any>>
+    @POST("report")
+    suspend fun reportIssue(@Body issue: Map<String, String>): ApiResponse<Map<String, Any>>
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:3000/" // For Android Emulator

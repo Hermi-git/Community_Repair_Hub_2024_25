@@ -55,7 +55,7 @@ fun HomeScreen(
             issues.filter { issue ->
                 issue.category?.contains(searchValue, ignoreCase = true) == true ||
                         issue.locations?.city?.contains(searchValue, ignoreCase = true) == true ||
-                        issue.Description?.contains(searchValue, ignoreCase = true) == true
+                        issue.description?.contains(searchValue, ignoreCase = true) == true
             }
         }
     }

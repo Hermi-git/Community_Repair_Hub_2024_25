@@ -21,39 +21,43 @@ export const getIssues = async (req, res) => {
 };
 
 
-
-export const reportIssue = async(req,res)=>{
-    const {imageURL,category,city,specificAdress,description,Date} = req.body
+export const reportIssue = async (req, res) => {
+    const { imageURL, category, city, specificAddress, description, issueDate } = req.body;
     try {
-        if(!category && !city){
+        if (!category || !city) {
             return res.status(400).json({
-                success:false,
-                message:"Please Enter the category and The city where the Issue is Located!!!"
-            })
+                success: false,
+                message: "Please enter the category and the city where the issue is located!",
+            });
         }
 
         const newIssue = new Issues({
-            imageURL:imageURL,
-            category:category,
-            city:city,
-            specificAddress:specificAdress,
-            description:description,
-            Date:Date
-        })
+            imageURL,
+            category,
+            locations: {
+                city,
+                specificArea: specificAddress,
+            },
+            description,
+            issueDate: new Date(issueDate), 
+        });
 
-        await newIssue.save()
+        await newIssue.save();
         return res.status(200).json({
-            sucess:true,
-            message:"Your issue has been successfully submitted! Please note that you will be held accountable if this issue is found to be false or fabricated."
-        })
+            success: true,
+            message: "Your issue has been successfully submitted! Please note that you will be held accountable if this issue is found to be false or fabricated.",
+        });
     } catch (error) {
+        console.error("Error in reportIssue:", error);
         res.status(500).json({
-            message:"Internal Server Error!!!",
-            success:false
-        })
-        
+            message: "Internal Server Error!!!",
+            success: false,
+            error: error.message,
+        });
     }
-}
+};
+
+
 
 export const searchByCategory = async (req, res) => {
     const { category } = req.query;

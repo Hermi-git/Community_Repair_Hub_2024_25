@@ -16,9 +16,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    region:{
+        type:String,
+
+    },
+    city:{
+        type:String
+    },
     role:{
         type:String,
-        enum:["Citizen","Repair team"],
+        enum:["Citizen","RepairTeam"],
         required:true
     },
     status:{

@@ -37,7 +37,7 @@ object TokenManager {
         encryptedPrefs.edit().putString(KEY_USER_ROLE, role).apply()
     }
 
-    fun getUserRole(): String? {
+    fun getRole(): String? {
         return encryptedPrefs.getString(KEY_USER_ROLE, null)
     }
 

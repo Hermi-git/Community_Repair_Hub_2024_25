@@ -100,6 +100,7 @@ fun UpdateStatusScreen(modifier: Modifier = Modifier, navController: NavHostCont
 
             Spacer(modifier = Modifier.height(24.dp))
 
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

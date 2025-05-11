@@ -8,7 +8,7 @@ import crypto from "crypto";
 export const signup = async (req, res) => {
     try {
         const { name, email, password, role, region, city } = req.body;
-        const validRoles = ["Citizen", "Repair team"];
+        const validRoles = ["Citizen", "RepairTeam"];
         
         if (!name || !email || !password || !role || !region || !city) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "All fields are required" });

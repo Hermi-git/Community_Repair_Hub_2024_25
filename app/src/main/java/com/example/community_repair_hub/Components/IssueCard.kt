@@ -35,7 +35,7 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
             // Use AsyncImage for loading images from URL
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(issue.ImagURL ?: "")
+                    .data(issue.imageURL ?: "")
                     .crossfade(true)
                     .build(),
                 contentDescription = "Issue Image",
@@ -53,8 +53,8 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Category: ${issue.category ?: "Unknown"}")
-                Text("Location: ${issue.locations?.city ?: "Unknown"}, ${issue.locations?.specficArea ?: ""}")
-                Text("Issue Date: ${issue.Date ?: "N/A"}")
+                Text("Location: ${issue.locations?.city ?: "Unknown"}, ${issue.locations?.specificArea ?: ""}")
+                Text("Issue Date: ${issue.issueDate ?: "N/A"}")
                 Text(
                     text = "View Detail",
                     modifier = Modifier
