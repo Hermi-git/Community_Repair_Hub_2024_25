@@ -1,5 +1,6 @@
 package com.example.community_repair_hub.ViewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.community_repair_hub.data.network.model.IssueResponse
@@ -21,18 +22,34 @@ class HomeViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    init {
+        fetchIssues()
+    }
+
     fun fetchIssues() {
-        _isLoading.value = true
-        _error.value = null
         viewModelScope.launch {
-            issueRepository.getIssues()
-                .onSuccess { issues ->
-                    _issues.value = issues
-                }
-                .onFailure { exception ->
-                    _error.value = exception.message
-                }
-            _isLoading.value = false
+            _isLoading.value = true
+            _error.value = null
+            try {
+                issueRepository.getIssues().fold(
+                    onSuccess = { issuesList ->
+                        Log.d("HomeViewModel", "Fetched ${issuesList.size} issues")
+                        issuesList.forEach { issue ->
+                            Log.d("HomeViewModel", "Issue: ${issue.category} - ${issue.description}")
+                        }
+                        _issues.value = issuesList
+                    },
+                    onFailure = { exception ->
+                        Log.e("HomeViewModel", "Error fetching issues", exception)
+                        _error.value = exception.message ?: "Failed to fetch issues"
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Exception in fetchIssues", e)
+                _error.value = e.message ?: "An unexpected error occurred"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
