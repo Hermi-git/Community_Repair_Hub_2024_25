@@ -180,8 +180,8 @@ fun SignupScreen(
                 modifier = Modifier.padding(end = 16.dp)
             )
             RadioButton(
-                selected = uiState.selectedRole == "Repairteam",
-                onClick = { viewModel.onRoleSelected("Repairteam") },
+                selected = uiState.selectedRole == "RepairTeam",
+                onClick = { viewModel.onRoleSelected("RepairTeam") },
                 colors = RadioButtonDefaults.colors()
             )
             Text(

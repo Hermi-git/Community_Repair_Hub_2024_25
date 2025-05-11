@@ -71,12 +71,24 @@ fun LoginScreen(
     LaunchedEffect(key1 = uiState.loginSuccess) {
         if (uiState.loginSuccess) {
             Toast.makeText(context, "Login Successful! Token: ${uiState.authToken ?: "Not Received"}", Toast.LENGTH_LONG).show()
-            // TODO: Securely store the uiState.authToken
-            // Navigate to home screen after successful login
-            navController.navigate("home")  {
-                // Optional: Clear back stack up to login or start destination
-                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                launchSingleTop = true // Avoid multiple copies of home screen
+            
+            // Navigate based on user role
+            when (uiState.userRole?.lowercase()) {
+                "repairteam" -> {
+                    navController.navigate("repairhome") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+                "citizen" -> {
+                    navController.navigate("home") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+                else -> {
+                    Toast.makeText(context, "Invalid user role", Toast.LENGTH_LONG).show()
+                }
             }
             viewModel.resetLoginStatus() // Reset status after handling
         }
