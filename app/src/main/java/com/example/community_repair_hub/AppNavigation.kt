@@ -12,11 +12,11 @@ import com.example.community_repair_hub.Screen.ReportIssueScreen
 import com.example.community_repair_hub.Screen.SignupScreen
 import com.example.community_repair_hub.Screen.ViewDetailScreen
 import com.example.community_repair_hub.Screen.LoginScreen
-import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
+//import com.example.community_repair_hub.Screen.RepairTeamHomeScreen
 import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.ViewModel.HomeViewModel
 import com.example.community_repair_hub.ViewModel.RepairDetailScreen
-import com.example.community_repair_hub.ViewModel.RepairTeamHomeViewModel
+//import com.example.community_repair_hub.ViewModel.RepairTeamHomeViewModel
 
 @Composable
 
@@ -27,10 +27,10 @@ fun AppNavigation(modifier: Modifier=Modifier){
             AuthScreen(modifier,navController)
         }
         composable("login"){
-            LoginScreen(modifier,navController, tokenManager= TokenManager)
+            LoginScreen(modifier,navController)
         }
         composable("signup") {
-            SignupScreen(modifier, navController, tokenManager = TokenManager)
+            SignupScreen(modifier, navController)
         }
         composable("home"){
             HomeScreen(modifier,navController, viewModel = HomeViewModel())
@@ -41,10 +41,10 @@ fun AppNavigation(modifier: Modifier=Modifier){
         composable("viewdetail") {
             ViewDetailScreen(modifier, navController)
         }
-        composable("repairhome") {
-            RepairTeamHomeScreen(
-                modifier, navController, viewModel = RepairTeamHomeViewModel())
-        }
+//        composable("repairhome") {
+//            RepairTeamHomeScreen(
+//                modifier, navController, viewModel = RepairTeamHomeViewModel())
+//        }
         composable("repairDetail") {
             RepairDetailScreen(modifier, navController)
         }
