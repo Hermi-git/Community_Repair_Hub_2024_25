@@ -8,9 +8,9 @@ import crypto from "crypto";
 export const signup = async (req, res) => {
     try {
         const { name, email, password, role, region, city } = req.body;
-        const validRoles = ["Citizen", "Repair team"];
+        const validRoles = ["Citizen", "RepairTeam"];
         
-        if (!name || !email || !password || !role || !region || !city) {
+        if (!name || !email || !password || !role ) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: "All fields are required" });
         }
         
@@ -57,6 +57,16 @@ export const signup = async (req, res) => {
             message: "Server error", 
             error: error.message 
         });
+    }
+};
+
+export const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
     }
 };
 

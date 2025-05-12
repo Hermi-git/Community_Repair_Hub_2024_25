@@ -2,14 +2,11 @@ package com.example.community_repair_hub.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -20,16 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import com.example.community_repair_hub.Components.NavDrawer
 import com.example.community_repair_hub.R
 import com.example.community_repair_hub.Components.IssueCard
 import com.example.community_repair_hub.ViewModel.HomeViewModel
-import com.example.community_repair_hub.data.network.model.IssueResponse
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,8 +45,19 @@ fun HomeScreen(
     val issues by viewModel.issues.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val profileImageUrl by viewModel.profileImageUrl.collectAsState()
 
-    // Filter issues based on search query
+    // Prepare the full image URL
+    val baseUrl = "http://192.168.34.57:5500"
+    val fullProfileImageUrl = if (profileImageUrl?.startsWith("/") == true) {
+        baseUrl + profileImageUrl
+
+    } else {
+        profileImageUrl ?: ""
+    }
+    println(fullProfileImageUrl)
+
+
     val filteredIssues = remember(issues, searchValue) {
         if (searchValue.isEmpty()) {
             issues
@@ -55,13 +65,14 @@ fun HomeScreen(
             issues.filter { issue ->
                 issue.category?.contains(searchValue, ignoreCase = true) == true ||
                         issue.locations?.city?.contains(searchValue, ignoreCase = true) == true ||
-                        issue.Description?.contains(searchValue, ignoreCase = true) == true
+                        issue.description?.contains(searchValue, ignoreCase = true) == true
             }
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.fetchIssues()
+        viewModel.fetchUserProfile()
     }
 
     NavDrawer(navController = navController, drawerState = drawerState) {
@@ -81,13 +92,26 @@ fun HomeScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_5),
+                        IconButton(onClick = { /* Profile click action */ }) {
+                            SubcomposeAsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(fullProfileImageUrl)
+                                    .crossfade(true)
+                                    .build(),
                                 contentDescription = "Profile",
                                 modifier = Modifier
                                     .size(36.dp)
-                                    .clip(CircleShape)
+                                    .clip(CircleShape),
+                                loading = {
+                                    CircularProgressIndicator(modifier = Modifier.size(18.dp))
+                                },
+                                error = {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.img_5),
+                                        contentDescription = "Default Profile",
+                                        modifier = Modifier.size(36.dp).clip(CircleShape)
+                                    )
+                                }
                             )
                         }
                     },

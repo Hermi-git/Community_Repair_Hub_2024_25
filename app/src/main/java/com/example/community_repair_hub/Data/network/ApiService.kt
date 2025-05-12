@@ -1,15 +1,7 @@
 package com.example.community_repair_hub.data.network
 
-
-import com.example.community_repair_hub.Data.Network.Model.IssueResponse
-import com.example.community_repair_hub.data.network.model.ForgotPasswordRequest
-import com.example.community_repair_hub.data.network.model.ForgotPasswordResponse
-import com.example.community_repair_hub.data.network.model.LogoutResponse
-import com.example.community_repair_hub.data.network.model.ResetPasswordRequest
-import com.example.community_repair_hub.data.network.model.ResetPasswordResponse
 import com.example.community_repair_hub.data.network.model.*
-
-
+import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -22,12 +14,22 @@ import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
 interface ApiService {
+    @Multipart
     @POST("users/register")
-    suspend fun signup(@Body request: SignupRequest): Response<SignupResponse>
+    suspend fun signup(
+        @Part("name") name: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("role") role: RequestBody,
+        @Part("region") region: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part image: MultipartBody.Part? = null
+    ): Response<SignupResponse>
 
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
-
+    @GET("/users/profile")
+    suspend fun getProfile(): Response<UserData>
     @POST("users/logout")
     suspend fun logout(): Response<LogoutResponse>
 
@@ -46,28 +48,33 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<ResponseBody>
 
-    @Multipart
-    @POST("api/reports")
-    suspend fun submitReport(
-        @Part("title") title: RequestBody,
-        @Part("description") description: RequestBody,
-        @Part image: MultipartBody.Part
-    ): Response<ResponseBody>
+
 
     // Citizen endpoints
     @GET("citizens/issues")
-    suspend fun getIssues(): Response<List<IssueResponse>>
+    suspend fun getIssues(): ApiResponse<List<IssueResponse>>
 
-    @GET("citizens/issues/category")
-    suspend fun searchByCategory(@Query("category") category: String): Response<List<IssueResponse>>
+    @GET("issues/category")
+    suspend fun searchByCategory(@Query("category") category: String): ApiResponse<List<IssueResponse>>
 
-    @GET("citizens/issues/location")
-    suspend fun searchByLocation(@Query("location") location: String): Response<List<IssueResponse>>
+    @GET("issues/location")
+    suspend fun searchByLocation(@Query("location") location: String): ApiResponse<List<IssueResponse>>
 
+
+    @Multipart
     @POST("citizens/report")
     suspend fun reportIssue(
-        @Body issue: Map<String, String>
-    ): Response<Map<String, Any>>
+        @Part image: MultipartBody.Part,
+        @Part("category") category: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part("specificAddress") specificAddress: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("issueDate") issueDate: RequestBody
+    ): Response<JsonObject>
+
+
+    @POST("report")
+    suspend fun reportIssue(@Body issue: Map<String, String>): ApiResponse<Map<String, Any>>
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:3000/" // For Android Emulator

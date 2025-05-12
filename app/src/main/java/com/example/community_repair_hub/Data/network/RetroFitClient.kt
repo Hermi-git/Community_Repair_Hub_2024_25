@@ -7,31 +7,32 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-private const val TAG = "RetrofitClient"
-
 object RetrofitClient {
-    // Use your computer's IP address
-    private const val BASE_URL = "http://192.168.175.57:5500/"
+    // Use your computer's IP address instead of localhost
+    private const val BASE_URL = "http://192.168.34.57:5500/" // Replace with your computer's IP address
 
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
 
     val instance: ApiService by lazy {
-        Log.d(TAG, "Initializing Retrofit with BASE_URL: $BASE_URL")
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+        Log.d("RetrofitClient", "Initializing Retrofit with BASE_URL: $BASE_URL")
+        
+        val loggingInterceptor = HttpLoggingInterceptor { message ->
+            Log.d("RetrofitClient", "Network: $message")
+        }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
-        retrofit.create(ApiService::class.java)
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
     }
 }

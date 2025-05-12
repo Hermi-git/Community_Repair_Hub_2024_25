@@ -1,5 +1,7 @@
 package com.example.community_repair_hub.ViewModel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,10 +24,13 @@ data class SignupUiState(
     val selectedCity: String = "",
     val isRegionDropdownExpanded: Boolean = false,
     val isCityDropdownExpanded: Boolean = false,
-    val regions: List<String> = listOf("Region A", "Region B", "Region C", "Region D"),
-    val cities: List<String> = listOf("city A", "city B", "city C", "city D"),
+    val regions: List<String> = emptyList(),
+    val cities: List<String> = emptyList(),
+    val regionCityMap: Map<String, List<String>> = emptyMap(),
+    val isLoadingRegions: Boolean = false,
     val signupInProgress: Boolean = false,
     val signupError: String? = null,
+    val imageUri: Uri? = null,
     val signupSuccess: Boolean = false
 )
 
@@ -36,6 +41,33 @@ class SignupViewModel(
 
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState: StateFlow<SignupUiState> = _uiState.asStateFlow()
+
+    init {
+        loadRegionsAndCities()
+    }
+
+    fun loadRegionsAndCities() {
+        val regionCityMap = mapOf(
+            "Addis Ababa" to listOf("Addis Ababa"),
+            "Oromia" to listOf("Adama", "Dire Dawa", "Jimma", "Shashemene"),
+            "Amhara" to listOf("Bahir Dar", "Gondar", "Dessie", "Debre Markos"),
+            "Tigray" to listOf("Mekelle", "Shire", "Axum", "Adigrat"),
+            "Sidama" to listOf("Hawassa"),
+            "Somali" to listOf("Jigjiga", "Degehabur", "Gode"),
+            "Benishangul-Gumuz" to listOf("Assosa", "Metekel", "Kamashi"),
+            "Gambella" to listOf("Gambella", "Abobo", "Itang"),
+            "Afar" to listOf("Semera", "Dubti", "Logiya"),
+            "Southern Nations, Nationalities, and Peoples' Region (SNNPR)" to listOf("Arba Minch", "Jinka", "Wolayta Sodo")
+        )
+
+        _uiState.update {
+            it.copy(
+                regions = regionCityMap.keys.toList(),
+                regionCityMap = regionCityMap,
+                isLoadingRegions = false
+            )
+        }
+    }
 
     fun onNameChange(newName: String) {
         _uiState.update {
@@ -62,6 +94,8 @@ class SignupViewModel(
         _uiState.update {
             it.copy(
                 selectedRegion = region,
+                selectedCity = "",
+                cities = it.regionCityMap[region] ?: emptyList(),
                 isRegionDropdownExpanded = false,
                 signupError = null
             )
@@ -88,7 +122,11 @@ class SignupViewModel(
         _uiState.update { it.copy(isCityDropdownExpanded = newState) }
     }
 
-    fun signup() {
+    fun onImagePicked(uri: Uri) {
+        _uiState.update { it.copy(imageUri = uri, signupError = null) }
+    }
+
+    fun signup(context: Context) {
         val currentState = _uiState.value
         Log.d(TAG, "Starting signup process for email: ${currentState.email}")
 
@@ -115,6 +153,12 @@ class SignupViewModel(
             return
         }
 
+        val validCities = currentState.regionCityMap[currentState.selectedRegion] ?: emptyList()
+        if (!validCities.contains(currentState.selectedCity)) {
+            _uiState.update { it.copy(signupError = "Invalid city for selected region") }
+            return
+        }
+
         _uiState.update {
             it.copy(
                 signupInProgress = true,
@@ -132,7 +176,9 @@ class SignupViewModel(
                     password = currentState.password,
                     role = currentState.selectedRole,
                     region = currentState.selectedRegion,
-                    city = currentState.selectedCity
+                    city = currentState.selectedCity,
+                    imageUri = currentState.imageUri,
+                    context = context
                 )) {
                     is AuthRepository.AuthResult.Success -> {
                         Log.d(TAG, "Signup successful")

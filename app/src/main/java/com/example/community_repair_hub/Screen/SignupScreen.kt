@@ -1,39 +1,26 @@
 package com.example.community_repair_hub.Screen
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.community_repair_hub.ViewModel.SignupViewModel
 import com.example.community_repair_hub.ViewModel.SignupViewModelFactory
 import com.example.community_repair_hub.Utills.TokenManager
@@ -65,6 +53,13 @@ fun SignupScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.onImagePicked(it) }
+    }
 
     // Handle successful signup
     LaunchedEffect(key1 = uiState.signupSuccess) {
@@ -115,15 +110,42 @@ fun SignupScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Profile Image Picker
+        Text(
+            text = "Profile Image",
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (uiState.imageUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(uiState.imageUri),
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                )
+            }
+            Spacer(Modifier.width(16.dp))
+            Button(onClick = { imagePickerLauncher.launch("image/*") }) {
+                Text("Choose Image")
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = uiState.name,
             onValueChange = { viewModel.onNameChange(it) },
             label = { Text(text = "Full Name") },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color(0xFF7CFC00),
-                unfocusedIndicatorColor = Color.Gray,
-                disabledIndicatorColor = Color.LightGray
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF7CFC00),
+                unfocusedBorderColor = Color.Gray,
+                disabledBorderColor = Color.LightGray
             ),
             singleLine = true
         )
@@ -133,10 +155,10 @@ fun SignupScreen(
             onValueChange = { viewModel.onEmailChange(it) },
             label = { Text(text = "Email Address") },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color(0xFF7CFC00),
-                unfocusedIndicatorColor = Color.Gray,
-                disabledIndicatorColor = Color.LightGray
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF7CFC00),
+                unfocusedBorderColor = Color.Gray,
+                disabledBorderColor = Color.LightGray
             ),
             singleLine = true
         )
@@ -148,10 +170,10 @@ fun SignupScreen(
             label = { Text(text = "Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color(0xFF7CFC00),
-                unfocusedIndicatorColor = Color.Gray,
-                disabledIndicatorColor = Color.LightGray
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF7CFC00),
+                unfocusedBorderColor = Color.Gray,
+                disabledBorderColor = Color.LightGray
             ),
             singleLine = true
         )
@@ -180,8 +202,8 @@ fun SignupScreen(
                 modifier = Modifier.padding(end = 16.dp)
             )
             RadioButton(
-                selected = uiState.selectedRole == "Repairteam",
-                onClick = { viewModel.onRoleSelected("Repairteam") },
+                selected = uiState.selectedRole == "RepairTeam",
+                onClick = { viewModel.onRoleSelected("RepairTeam") },
                 colors = RadioButtonDefaults.colors()
             )
             Text(
@@ -210,37 +232,74 @@ fun SignupScreen(
             modifier = Modifier.padding(8.dp)
         )
         Box {
-            TextField(
-                value = uiState.selectedRegion,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color(0xFF7CFC00),
-                    unfocusedIndicatorColor = Color.Gray,
-                    disabledIndicatorColor = Color.LightGray
-                ),
-                label = { Text("Select Region") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.toggleRegionDropdown() }
-            )
+            if (uiState.isLoadingRegions) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFF7CFC00)
+                )
+            } else {
+                OutlinedTextField(
+                    value = uiState.selectedRegion,
+                    onValueChange = {},
+                    readOnly = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color(0xFF7CFC00),
+                        unfocusedBorderColor = Color.Gray,
+                        disabledBorderColor = Color.LightGray
+                    ),
+                    label = { Text("Select Region") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = "Dropdown Icon",
+                            modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.toggleRegionDropdown() }
+                )
 
-            DropdownMenu(
-                expanded = uiState.isRegionDropdownExpanded,
-                onDismissRequest = { viewModel.toggleRegionDropdown(false) }
-            ) {
-                uiState.regions.forEach { region ->
-                    DropdownMenuItem(
-                        text = { Text(text = region) },
-                        onClick = { viewModel.onRegionSelected(region) }
-                    )
+                DropdownMenu(
+                    expanded = uiState.isRegionDropdownExpanded,
+                    onDismissRequest = { viewModel.toggleRegionDropdown(false) }
+                ) {
+                    if (uiState.regions.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No regions available") },
+                            onClick = { }
+                        )
+                    } else {
+                        uiState.regions.forEach { region ->
+                            DropdownMenuItem(
+                                text = { Text(text = region) },
+                                onClick = { viewModel.onRegionSelected(region) }
+                            )
+                        }
+                    }
+                }
+
+                if (uiState.regions.isEmpty() && !uiState.isLoadingRegions) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "No regions available",
+                            color = Color.Red,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Button(
+                            onClick = { viewModel.loadRegionsAndCities() },
+                            modifier = Modifier.padding(top = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF7CFC00),
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text("Retry")
+                        }
+                    }
                 }
             }
         }
@@ -257,14 +316,15 @@ fun SignupScreen(
             modifier = Modifier.padding(8.dp)
         )
         Box {
-            TextField(
+            OutlinedTextField(
                 value = uiState.selectedCity,
                 onValueChange = {},
                 readOnly = true,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color(0xFF7CFC00),
-                    unfocusedIndicatorColor = Color.Gray,
-                    disabledIndicatorColor = Color.LightGray
+                enabled = uiState.selectedRegion.isNotEmpty(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color(0xFF7CFC00),
+                    unfocusedBorderColor = Color.Gray,
+                    disabledBorderColor = Color.LightGray
                 ),
                 label = { Text("Select City") },
                 trailingIcon = {
@@ -303,7 +363,7 @@ fun SignupScreen(
         }
 
         Button(
-            onClick = { viewModel.signup() },
+            onClick = { viewModel.signup(context) }, // Pass context here!
             enabled = !uiState.signupInProgress,
             modifier = Modifier
                 .fillMaxWidth()

@@ -21,39 +21,73 @@ export const getIssues = async (req, res) => {
 };
 
 
-
-export const reportIssue = async(req,res)=>{
-    const {imageURL,category,city,specificAdress,description,Date} = req.body
+// backend/controllers/citizenController.js
+export const reportIssue = async (req, res) => {
     try {
-        if(!category && !city){
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+
+        const { category, city, specificAddress, description, issueDate } = req.body;
+        
+        if (!category || !city) {
             return res.status(400).json({
-                success:false,
-                message:"Please Enter the category and The city where the Issue is Located!!!"
-            })
+                success: false,
+                message: "Please enter the category and the city where the issue is located!",
+            });
         }
 
-        const newIssue = new Issues({
-            imageURL:imageURL,
-            category:category,
-            city:city,
-            specificAddress:specificAdress,
-            description:description,
-            Date:Date
-        })
+        // Get the uploaded image path
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Image is required!",
+            });
+        }
 
-        await newIssue.save()
+        // Log the file information
+        console.log('Uploaded file:', {
+            filename: req.file.filename,
+            path: req.file.path,
+            mimetype: req.file.mimetype
+        });
+
+        const imageURL = `/uploads/${req.file.filename}`;
+
+        const newIssue = new Issues({
+            imageURL,
+            category,
+            locations: {
+                city,
+                specificArea: specificAddress,
+            },
+            description,
+            issueDate: new Date(issueDate),
+        });
+
+        const savedIssue = await newIssue.save();
+        console.log('Saved issue:', savedIssue);
+
         return res.status(200).json({
-            sucess:true,
-            message:"Your issue has been successfully submitted! Please note that you will be held accountable if this issue is found to be false or fabricated."
-        })
+            success: true,
+            message: "Your issue has been successfully submitted!",
+            data: savedIssue
+        });
     } catch (error) {
-        res.status(500).json({
-            message:"Internal Server Error!!!",
-            success:false
-        })
+        console.error("Detailed error in reportIssue:", {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!!!",
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
-}
+};
+
 
 export const searchByCategory = async (req, res) => {
     const { category } = req.query;

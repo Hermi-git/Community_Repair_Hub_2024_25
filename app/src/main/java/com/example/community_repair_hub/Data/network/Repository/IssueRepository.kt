@@ -1,25 +1,29 @@
 package com.example.community_repair_hub.data.network.repository
 
+import android.util.Log
 import com.example.community_repair_hub.data.network.RetrofitClient
 import com.example.community_repair_hub.data.network.model.IssueResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 
 class IssueRepository {
     private val apiService = RetrofitClient.instance
 
     suspend fun getIssues(): Result<List<IssueResponse>> = withContext(Dispatchers.IO) {
         try {
+            Log.d("IssueRepository", "Fetching issues...")
             val response = apiService.getIssues()
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
-                } ?: Result.failure(Exception("No issues found"))
+            Log.d("IssueRepository", "Response received: success=${response.success}, message=${response.message}")
+            Log.d("IssueRepository", "Data size: ${response.data.size}")
+            
+            if (response.success) {
+                Result.success(response.data)
             } else {
-                Result.failure(Exception("Failed to fetch issues: ${response.code()}"))
+                Log.e("IssueRepository", "API returned error: ${response.message}")
+                Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
+            Log.e("IssueRepository", "Error fetching issues", e)
             Result.failure(e)
         }
     }
@@ -27,12 +31,10 @@ class IssueRepository {
     suspend fun searchByCategory(category: String): Result<List<IssueResponse>> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.searchByCategory(category)
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
-                } ?: Result.failure(Exception("No issues found for category: $category"))
+            if (response.success) {
+                Result.success(response.data)
             } else {
-                Result.failure(Exception("Failed to search by category: ${response.code()}"))
+                Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -42,12 +44,10 @@ class IssueRepository {
     suspend fun searchByLocation(location: String): Result<List<IssueResponse>> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.searchByLocation(location)
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
-                } ?: Result.failure(Exception("No issues found for location: $location"))
+            if (response.success) {
+                Result.success(response.data)
             } else {
-                Result.failure(Exception("Failed to search by location: ${response.code()}"))
+                Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -57,12 +57,10 @@ class IssueRepository {
     suspend fun reportIssue(issue: Map<String, String>): Result<Map<String, Any>> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.reportIssue(issue)
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    Result.success(it)
-                } ?: Result.failure(Exception("Failed to get response body"))
+            if (response.success) {
+                Result.success(response.data)
             } else {
-                Result.failure(Exception("Failed to report issue: ${response.code()}"))
+                Result.failure(Exception(response.message))
             }
         } catch (e: Exception) {
             Result.failure(e)

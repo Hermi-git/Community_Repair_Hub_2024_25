@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +71,6 @@ import com.example.community_repair_hub.ViewModel.ReportIssueViewModel
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.util.Locale
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavController) {
@@ -84,26 +84,28 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
         onResult = { uri ->
             uri?.let {
                 viewModel.imageUri = it
-                viewModel.uploadImage(
-                    uri = it,
-                    context = context,
-                    onSuccess = { url ->
-                        Log.d("UPLOAD", "Image URL: $url")
-                        viewModel.imageUrl = url
-                    },
-                    onError = { error ->
-                        Log.e("UPLOAD", error)
-                        // Show error to user
-                    }
-                )
             }
         }
     )
 
     var expandedCity by remember { mutableStateOf(false) }
-    val cities = listOf("City 1", "City 2", "City 3")
+    val cities = listOf("Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata")
     var expandedAddress by remember { mutableStateOf(false) }
-    val addresses = listOf("Address 1", "Address 2", "Address 3")
+
+    // City to specific areas mapping
+    val citySpecificAreas = mapOf(
+        "Mumbai" to listOf("Andheri", "Bandra", "Colaba", "Dadar", "Juhu"),
+        "Delhi" to listOf("Connaught Place", "Dwarka", "Hauz Khas", "Rohini", "Saket"),
+        "Bangalore" to listOf("Indiranagar", "Koramangala", "MG Road", "Whitefield", "Electronic City"),
+        "Chennai" to listOf("Adyar", "Anna Nagar", "T Nagar", "Velachery", "Mylapore"),
+        "Kolkata" to listOf("Park Street", "Salt Lake", "New Town", "Howrah", "Dum Dum")
+    )
+
+    // Get specific areas based on selected city
+    val specificAreas = remember(viewModel.city) {
+        citySpecificAreas[viewModel.city] ?: emptyList()
+    }
+
     var showDatePicker by remember { mutableStateOf(false) }
 
     // Show error/success messages
@@ -119,6 +121,11 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
             delay(2000) // Show for 2 seconds
             navController.popBackStack() // Go back after successful submission
         }
+    }
+
+    // Reset specific address when city changes
+    LaunchedEffect(viewModel.city) {
+        viewModel.specificAddress = ""
     }
 
     Scaffold(
@@ -143,7 +150,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            // Rest of your code remains the same
+            // Image Upload Section
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -280,13 +287,14 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         IconButton(onClick = { expandedAddress = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                         }
-                    }
+                    },
+                    enabled = viewModel.city.isNotEmpty()
                 )
                 DropdownMenu(
                     expanded = expandedAddress,
                     onDismissRequest = { expandedAddress = false }
                 ) {
-                    addresses.forEach { address ->
+                    specificAreas.forEach { address ->
                         DropdownMenuItem(
                             text = { Text(text = address) },
                             onClick = {
@@ -374,7 +382,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             onClick = {
                                 val selectedMillis = datePickerState.selectedDateMillis
                                 if (selectedMillis != null) {
-                                    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                                     viewModel.date = formatter.format(Date(selectedMillis))
                                 }
                                 showDatePicker = false
