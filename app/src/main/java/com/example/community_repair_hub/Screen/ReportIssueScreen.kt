@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +71,6 @@ import com.example.community_repair_hub.ViewModel.ReportIssueViewModel
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.util.Locale
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavController) {
@@ -84,47 +84,27 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
         onResult = { uri ->
             uri?.let {
                 viewModel.imageUri = it
-                viewModel.uploadImage(
-                    uri = it,
-                    context = context,
-                    onSuccess = { url ->
-                        Log.d("UPLOAD", "Image URL: $url")
-                        viewModel.imageUrl = url
-                    },
-                    onError = { error ->
-                        Log.e("UPLOAD", error)
-                        // Show error to user
-                    }
-                )
             }
         }
     )
 
     var expandedCity by remember { mutableStateOf(false) }
-    val cities = listOf(
-        "Addis Ababa",
-        "Adama",
-        "Bahir Dar",
-        "Mekelle",
-        "Hawassa",
-        "Jigjiga",
-        "Assosa",
-        "Gambella",
-        "Semera"
+    val cities = listOf("Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata")
+    var expandedAddress by remember { mutableStateOf(false) }
+
+    // City to specific areas mapping
+    val citySpecificAreas = mapOf(
+        "Mumbai" to listOf("Andheri", "Bandra", "Colaba", "Dadar", "Juhu"),
+        "Delhi" to listOf("Connaught Place", "Dwarka", "Hauz Khas", "Rohini", "Saket"),
+        "Bangalore" to listOf("Indiranagar", "Koramangala", "MG Road", "Whitefield", "Electronic City"),
+        "Chennai" to listOf("Adyar", "Anna Nagar", "T Nagar", "Velachery", "Mylapore"),
+        "Kolkata" to listOf("Park Street", "Salt Lake", "New Town", "Howrah", "Dum Dum")
     )
 
-    var expandedAddress by remember { mutableStateOf(false) }
-    val citySpecificAreas = mapOf(
-        "Addis Ababa" to listOf("Bole", "Lideta", "Piazza", "Arat Kilo", "Megenagna", "Mexico", "Sar Bet", "Summit", "CMC"),
-        "Adama" to listOf("Dabe Laga", "Fincha'a", "Geda", "Loke", "Boku", "Bulbula"),
-        "Bahir Dar" to listOf("Kebel 03", "Kebel 14", "Shumabo", "Tana", "St. Giorgis"),
-        "Mekelle" to listOf("Hawelti", "Adi Haki", "Quiha", "Aynalem", "Enda Mariam"),
-        "Hawassa" to listOf("Tabor", "Piassa", "Dume", "Misrak", "Bahir Dar Sefer"),
-        "Jigjiga" to listOf("Ayrub", "Kebele 01", "Kebele 03", "Barwaaqo", "Gurmad"),
-        "Assosa" to listOf("Homosha", "Mandura", "Menge", "Debre Zeit", "Yaso"),
-        "Gambella" to listOf("Itang", "Abobo", "Pinyudo", "Jikawo", "Makuey"),
-        "Semera" to listOf("Jegol", "Aboker", "Sofi", "Shenkor", "Hakim", "Dubti", "Logiya", "Awash", "Gawane", "Dewe")
-    )
+    // Get specific areas based on selected city
+    val specificAreas = remember(viewModel.city) {
+        citySpecificAreas[viewModel.city] ?: emptyList()
+    }
 
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -141,6 +121,11 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
             delay(2000) // Show for 2 seconds
             navController.popBackStack() // Go back after successful submission
         }
+    }
+
+    // Reset specific address when city changes
+    LaunchedEffect(viewModel.city) {
+        viewModel.specificAddress = ""
     }
 
     Scaffold(
@@ -165,7 +150,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            // Rest of your code remains the same
+            // Image Upload Section
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -265,7 +250,6 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             text = { Text(text = city) },
                             onClick = {
                                 viewModel.city = city
-                                viewModel.specificAddress = "" // Reset specific address when city changes
                                 expandedCity = false
                             }
                         )
@@ -277,7 +261,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
 
             // Address Dropdown
             Text(
-                text = "Specific Area",
+                text = "Specific Address",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
@@ -291,7 +275,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                 OutlinedTextField(
                     value = viewModel.specificAddress,
                     onValueChange = {},
-                    label = { Text("Select Specific Area") },
+                    label = { Text("Select Address") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color(0xFF7CFC00),
@@ -299,33 +283,25 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                         disabledIndicatorColor = Color.LightGray
                     ),
                     readOnly = true,
-                    enabled = viewModel.city.isNotEmpty(),
                     trailingIcon = {
                         IconButton(onClick = { expandedAddress = true }) {
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
                         }
-                    }
+                    },
+                    enabled = viewModel.city.isNotEmpty()
                 )
                 DropdownMenu(
                     expanded = expandedAddress,
                     onDismissRequest = { expandedAddress = false }
                 ) {
-                    val areas = citySpecificAreas[viewModel.city] ?: emptyList()
-                    if (areas.isEmpty()) {
+                    specificAreas.forEach { address ->
                         DropdownMenuItem(
-                            text = { Text("Select a city first") },
-                            onClick = { expandedAddress = false }
+                            text = { Text(text = address) },
+                            onClick = {
+                                viewModel.specificAddress = address
+                                expandedAddress = false
+                            }
                         )
-                    } else {
-                        areas.forEach { area ->
-                            DropdownMenuItem(
-                                text = { Text(text = area) },
-                                onClick = {
-                                    viewModel.specificAddress = area
-                                    expandedAddress = false
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -406,7 +382,7 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
                             onClick = {
                                 val selectedMillis = datePickerState.selectedDateMillis
                                 if (selectedMillis != null) {
-                                    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                                     viewModel.date = formatter.format(Date(selectedMillis))
                                 }
                                 showDatePicker = false

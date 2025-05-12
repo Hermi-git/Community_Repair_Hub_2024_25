@@ -4,14 +4,19 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.community_repair_hub.data.network.model.IssueResponse
+import com.example.community_repair_hub.data.network.repository.AuthRepository
 import com.example.community_repair_hub.data.network.repository.IssueRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val issueRepository: IssueRepository = IssueRepository()
+    private val issueRepository: IssueRepository = IssueRepository(),
+    private val authRepository: AuthRepository = AuthRepository
 ) : ViewModel() {
+
+    private val _profileImageUrl = MutableStateFlow<String?>(null)
+    val profileImageUrl: StateFlow<String?> = _profileImageUrl
 
     private val _issues = MutableStateFlow<List<IssueResponse>>(emptyList())
     val issues: StateFlow<List<IssueResponse>> = _issues
@@ -24,6 +29,22 @@ class HomeViewModel(
 
     init {
         fetchIssues()
+        fetchUserProfile()
+    }
+
+    fun fetchUserProfile() {
+        viewModelScope.launch {
+            when (val result = authRepository.getProfile()) {
+                is AuthRepository.AuthResult.Success -> {
+                    _profileImageUrl.value = result.data.imageUrl
+                    _profileImageUrl.value = result.data.imageUrl
+                    Log.d("HomeViewModel", "Fetched profile imageUrl: ${result.data.imageUrl}")
+                }
+                is AuthRepository.AuthResult.Error -> {
+                    Log.e("HomeViewModel", "Error fetching user profile", result.exception)
+                }
+            }
+        }
     }
 
     fun fetchIssues() {
@@ -33,19 +54,13 @@ class HomeViewModel(
             try {
                 issueRepository.getIssues().fold(
                     onSuccess = { issuesList ->
-                        Log.d("HomeViewModel", "Fetched ${issuesList.size} issues")
-                        issuesList.forEach { issue ->
-                            Log.d("HomeViewModel", "Issue: ${issue.category} - ${issue.description}")
-                        }
                         _issues.value = issuesList
                     },
                     onFailure = { exception ->
-                        Log.e("HomeViewModel", "Error fetching issues", exception)
                         _error.value = exception.message ?: "Failed to fetch issues"
                     }
                 )
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Exception in fetchIssues", e)
                 _error.value = e.message ?: "An unexpected error occurred"
             } finally {
                 _isLoading.value = false

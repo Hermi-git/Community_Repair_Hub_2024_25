@@ -1,6 +1,8 @@
 package com.example.community_repair_hub
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -14,6 +16,8 @@ import com.example.community_repair_hub.ViewModel.*
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val homeViewModel: HomeViewModel = viewModel()
+    val profileImageUrl by homeViewModel.profileImageUrl.collectAsState()
 
     NavHost(navController = navController, startDestination = "auth") {
         composable("auth") {
@@ -27,7 +31,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable("home") {
             NavigationGuard(navController = navController, requiredRole = "citizen") {
-                HomeScreen(modifier, navController, viewModel = HomeViewModel())
+                HomeScreen(modifier, navController, viewModel = homeViewModel)
             }
         }
         composable("report") {

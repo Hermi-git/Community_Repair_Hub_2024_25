@@ -1,5 +1,7 @@
 package com.example.community_repair_hub.ViewModel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +30,7 @@ data class SignupUiState(
     val isLoadingRegions: Boolean = false,
     val signupInProgress: Boolean = false,
     val signupError: String? = null,
+    val imageUri: Uri? = null,
     val signupSuccess: Boolean = false
 )
 
@@ -44,7 +47,6 @@ class SignupViewModel(
     }
 
     fun loadRegionsAndCities() {
-        // Hardcoded regions and cities matching the backend schema
         val regionCityMap = mapOf(
             "Addis Ababa" to listOf("Addis Ababa"),
             "Oromia" to listOf("Adama", "Dire Dawa", "Jimma", "Shashemene"),
@@ -92,7 +94,7 @@ class SignupViewModel(
         _uiState.update {
             it.copy(
                 selectedRegion = region,
-                selectedCity = "", // Reset city when region changes
+                selectedCity = "",
                 cities = it.regionCityMap[region] ?: emptyList(),
                 isRegionDropdownExpanded = false,
                 signupError = null
@@ -120,7 +122,11 @@ class SignupViewModel(
         _uiState.update { it.copy(isCityDropdownExpanded = newState) }
     }
 
-    fun signup() {
+    fun onImagePicked(uri: Uri) {
+        _uiState.update { it.copy(imageUri = uri, signupError = null) }
+    }
+
+    fun signup(context: Context) {
         val currentState = _uiState.value
         Log.d(TAG, "Starting signup process for email: ${currentState.email}")
 
@@ -147,7 +153,6 @@ class SignupViewModel(
             return
         }
 
-        // Validate city belongs to selected region
         val validCities = currentState.regionCityMap[currentState.selectedRegion] ?: emptyList()
         if (!validCities.contains(currentState.selectedCity)) {
             _uiState.update { it.copy(signupError = "Invalid city for selected region") }
@@ -171,7 +176,9 @@ class SignupViewModel(
                     password = currentState.password,
                     role = currentState.selectedRole,
                     region = currentState.selectedRegion,
-                    city = currentState.selectedCity
+                    city = currentState.selectedCity,
+                    imageUri = currentState.imageUri,
+                    context = context
                 )) {
                     is AuthRepository.AuthResult.Success -> {
                         Log.d(TAG, "Signup successful")
