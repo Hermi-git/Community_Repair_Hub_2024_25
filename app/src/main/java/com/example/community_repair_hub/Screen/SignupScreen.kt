@@ -191,7 +191,6 @@ fun SignupScreen(
             modifier = Modifier.padding(8.dp)
         )
         Box {
-<<<<<<< HEAD
             if (uiState.isLoadingRegions) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
@@ -219,23 +218,6 @@ fun SignupScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { viewModel.toggleRegionDropdown() }
-=======
-            OutlinedTextField(
-                value = uiState.selectedRegion,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF7CFC00),
-                    unfocusedBorderColor = Color.Gray,
-                    disabledBorderColor = Color.LightGray
-                ),
-                label = { Text("Select Region") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Dropdown Icon",
-                        modifier = Modifier.clickable { viewModel.toggleRegionDropdown() }
->>>>>>> fc775918282afd45244a1ab0d91c78a65ddec3c1
                     )
 
                     if (uiState.regions.isEmpty() && !uiState.isLoadingRegions) {
@@ -299,18 +281,11 @@ fun SignupScreen(
                 value = uiState.selectedCity,
                 onValueChange = {},
                 readOnly = true,
-<<<<<<< HEAD
                 enabled = uiState.selectedRegion.isNotEmpty(),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color(0xFF7CFC00),
                     unfocusedIndicatorColor = Color.Gray,
                     disabledIndicatorColor = Color.LightGray
-=======
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF7CFC00),
-                    unfocusedBorderColor = Color.Gray,
-                    disabledBorderColor = Color.LightGray
->>>>>>> fc775918282afd45244a1ab0d91c78a65ddec3c1
                 ),
                 label = { Text("Select City") },
                 trailingIcon = {
