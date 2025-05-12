@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.community_repair_hub.Screen.*
-import com.example.community_repair_hub.Utills.NavigationGuard
+
 import com.example.community_repair_hub.Utills.TokenManager
 import com.example.community_repair_hub.ViewModel.*
 
@@ -30,34 +30,32 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             SignupScreen(modifier, navController)
         }
         composable("home") {
-            NavigationGuard(navController = navController, requiredRole = "citizen") {
-                HomeScreen(modifier, navController, viewModel = homeViewModel)
-            }
+            HomeScreen(modifier, navController, viewModel = homeViewModel)
         }
         composable("report") {
-            NavigationGuard(navController = navController, requiredRole = "citizen") {
-                ReportIssueScreen(modifier, navController)
-            }
+            ReportIssueScreen(modifier, navController)
         }
-        composable("viewdetail") {
-            NavigationGuard(navController = navController, requiredRole = "citizen") {
-                ViewDetailScreen(modifier, navController)
-            }
+        composable("viewdetail/{issueId}") { backStackEntry ->
+            val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+            ViewDetailScreen(issueId = issueId, navController = navController)
         }
         composable("repairhome") {
-            NavigationGuard(navController = navController, requiredRole = "repairteam") {
-                RepairTeamHomeScreen(
-                    modifier = modifier,
-                    navController = navController,
-                    viewModel = RepairTeamHomeViewModel()
-                )
-            }
+            RepairTeamHomeScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = RepairTeamHomeViewModel()
+            )
         }
         composable("repairDetail") {
-            NavigationGuard(navController = navController, requiredRole = "repairteam") {
-                RepairDetailScreen(modifier, navController)
-            }
+            RepairDetailScreen(modifier, navController)
+        }
+        composable("repairviewdetail/{issueId}") { backStackEntry ->
+            val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+            RepairViewDetailScreen(issueId = issueId, navController = navController)
+        }
+        composable("assignedissue/{issueId}") { backStackEntry ->
+            val issueId = backStackEntry.arguments?.getString("issueId") ?: ""
+            AssignedIssueScreen(issueId = issueId, navController = navController)
         }
     }
-
 }

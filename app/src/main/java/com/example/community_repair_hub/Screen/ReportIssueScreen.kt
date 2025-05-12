@@ -89,16 +89,21 @@ fun ReportIssueScreen(modifier: Modifier = Modifier, navController: NavControlle
     )
 
     var expandedCity by remember { mutableStateOf(false) }
-    val cities = listOf("Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata")
+    val cities = listOf("Addis Ababa","Dire Dawa","Bahir Dar","Hawassa","Mekelle","Jimma","Gondar","Adama","Dessie","Harar")
     var expandedAddress by remember { mutableStateOf(false) }
 
-    // City to specific areas mapping
+
     val citySpecificAreas = mapOf(
-        "Mumbai" to listOf("Andheri", "Bandra", "Colaba", "Dadar", "Juhu"),
-        "Delhi" to listOf("Connaught Place", "Dwarka", "Hauz Khas", "Rohini", "Saket"),
-        "Bangalore" to listOf("Indiranagar", "Koramangala", "MG Road", "Whitefield", "Electronic City"),
-        "Chennai" to listOf("Adyar", "Anna Nagar", "T Nagar", "Velachery", "Mylapore"),
-        "Kolkata" to listOf("Park Street", "Salt Lake", "New Town", "Howrah", "Dum Dum")
+        "Addis Ababa" to listOf("Bole", "Sarbet", "Summit", "CMC", "Ayat", "Gerji", "CMC", "Saris", "Megenagna", "Merkato"),
+        "Dire Dawa" to listOf("Keble 01", "Keble 02", "Keble 03", "Keble 04", "Keble 05", "Industrial Area"),
+        "Bahir Dar" to listOf("Tana", "Gish Abay", "Tis Abay", "Lake Side", "University Area", "Central Market"),
+        "Hawassa" to listOf("Lake Side", "University Area", "Industrial Zone", "Central Market", "Tabor"),
+        "Mekelle" to listOf("Ayder", "Adi Haki", "Industrial Area", "Central Market", "Semien"),
+        "Jimma" to listOf("Abay", "Bishoftu", "Central Market", "University Area", "Airport Road"),
+        "Gondar" to listOf("Fasil", "Azezo", "Central Market", "University Area", "Maraki"),
+        "Adama" to listOf("Central Market", "Industrial Zone", "University Area", "Lake Side", "Airport Road"),
+        "Dessie" to listOf("Central Market", "University Area", "Industrial Zone", "Airport Road", "Lake Side"),
+        "Harar" to listOf("Jugol", "New Town", "Industrial Zone", "University Area", "Airport Road")
     )
 
     // Get specific areas based on selected city

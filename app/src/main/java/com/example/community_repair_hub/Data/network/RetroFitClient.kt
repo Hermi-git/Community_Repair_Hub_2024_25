@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     // Use your computer's IP address instead of localhost
-    private const val BASE_URL = "http://192.168.34.57:5500/" // Replace with your computer's IP address
+    private const val BASE_URL = "http://192.168.39.252:5500/" // Replace with your computer's IP address
 
 
     val instance: ApiService by lazy {
