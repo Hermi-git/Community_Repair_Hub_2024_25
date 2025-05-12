@@ -75,7 +75,7 @@ dependencies {
     // Security
     implementation(libs.androidx.security.crypto)
 
-    // Image Loading
+   
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.compose.material.icons.core)
