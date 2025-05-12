@@ -27,7 +27,7 @@ import com.example.community_repair_hub.data.network.model.IssueResponse
 @Composable
 fun IssueCard(issue: IssueResponse, navController: NavController) {
     // Backend base URL (update if needed)
-    val baseUrl = "http://192.168.34.57:5500"
+    val baseUrl = "http://192.168.39.252:5500"
     val imageUrl = if (issue.imageURL?.startsWith("/") == true) {
         baseUrl + issue.imageURL
     } else {
@@ -125,8 +125,11 @@ fun IssueCard(issue: IssueResponse, navController: NavController) {
 
                 TextButton(
                     onClick = {
-                        issue._id?.let { id ->
-                            navController.navigate("viewdetail/$id")
+                        Log.d("IssueCard", "Navigating to detail for id: ${issue._id}")
+                        if (issue._id.isNullOrEmpty()) {
+                            Log.e("IssueCard", "Attempted to navigate with null or empty issueId!")
+                        } else {
+                            navController.navigate("viewdetail/${issue._id}")
                         }
                     },
                     modifier = Modifier.align(Alignment.End)

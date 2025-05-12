@@ -1,5 +1,5 @@
 import express from 'express';
-import { getIssues, reportIssue, searchByCategory, searchByLocation } from '../controllers/citizeController.js';
+import { getIssues, reportIssue, searchByCategory, searchByLocation,getIssueById } from '../controllers/citizeController.js';
 import {upload,handleMulterError} from '../config/multerConfig.js';
 
 const router = express.Router();
@@ -12,5 +12,6 @@ router.post('/report', upload.single('image'), (req, res, next) => {
   }, reportIssue);
 router.get('/issues/category', searchByCategory);
 router.get('/issues/location', searchByLocation);
+router.get("/issues/:id", getIssueById);
 
 export default router;

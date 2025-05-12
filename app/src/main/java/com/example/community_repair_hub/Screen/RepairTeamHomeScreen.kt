@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.community_repair_hub.Components.NavDrawer
 import com.example.community_repair_hub.R
 import com.example.community_repair_hub.ViewModel.RepairTeamHomeViewModel
@@ -96,7 +96,7 @@ fun RepairTeamHomeScreen(
                             onClick = { /* TODO: Navigate to Profile */ }
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.img_5),
+                                painter = painterResource(id = R.drawable.img_6),
                                 contentDescription = "Profile",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -201,9 +201,16 @@ fun RepairTeamHomeScreen(
                                             .fillMaxWidth()
                                             .padding(12.dp)
                                     ) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(issue.imageURL ?: R.drawable.img_3),
+                                        val baseUrl = "http://192.168.39.252:5500"
+                                        val imageUrl = if (issue.imageURL?.startsWith("/") == true) {
+                                            baseUrl + issue.imageURL
+                                        } else {
+                                            issue.imageURL ?: ""
+                                        }
+                                        AsyncImage(
+                                            model = imageUrl,
                                             contentDescription = null,
+                                            contentScale = ContentScale.Crop,
                                             modifier = Modifier
                                                 .size(80.dp)
                                                 .clip(RoundedCornerShape(8.dp))
@@ -213,16 +220,16 @@ fun RepairTeamHomeScreen(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Text(
-                                                text = "Category:${issue.category}",
+                                                text = "Category: ${issue.category}",
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 15.sp
                                             )
                                             Text(
-                                                text = "location:${issue.locations}",
+                                                text = "Location: ${issue.locations?.city}, ${issue.locations?.specificArea}",
                                                 fontSize = 13.sp
                                             )
                                             Text(
-                                                text = "Issue Date:${issue.issueDate}",
+                                                text = "Issue Date: ${issue.issueDate?.take(10)}",
                                                 fontSize = 13.sp
                                             )
                                             Spacer(modifier = Modifier.height(8.dp))
@@ -236,7 +243,7 @@ fun RepairTeamHomeScreen(
                                                     fontWeight = FontWeight.Bold,
                                                     fontSize = 14.sp,
                                                     modifier = Modifier.clickable {
-                                                        navController.navigate("viewdetail/${issue._id}")
+                                                        navController.navigate("repairviewdetail/${issue._id}")
                                                     }
                                                 )
                                             }

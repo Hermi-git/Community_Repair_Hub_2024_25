@@ -2,11 +2,16 @@ import mongoose from "mongoose";
 
 // Define city-specific areas mapping
 const citySpecificAreas = {
-    "Mumbai": ["Andheri", "Bandra", "Colaba", "Dadar", "Juhu"],
-    "Delhi": ["Connaught Place", "Dwarka", "Hauz Khas", "Rohini", "Saket"],
-    "Bangalore": ["Indiranagar", "Koramangala", "MG Road", "Whitefield", "Electronic City"],
-    "Chennai": ["Adyar", "Anna Nagar", "T Nagar", "Velachery", "Mylapore"],
-    "Kolkata": ["Park Street", "Salt Lake", "New Town", "Howrah", "Dum Dum"]
+    "Addis Ababa": ["Bole", "Sarbet", "Summit", "CMC", "Ayat", "Gerji", "Saris", "Megenagna", "Merkato"],
+    "Dire Dawa": ["Keble 01", "Keble 02", "Keble 03", "Keble 04", "Keble 05", "Industrial Area"],
+    "Bahir Dar": ["Tana", "Gish Abay", "Tis Abay", "Lake Side", "University Area", "Central Market"],
+    "Hawassa": ["Lake Side", "University Area", "Industrial Zone", "Central Market", "Tabor"],
+    "Mekelle": ["Ayder", "Adi Haki", "Industrial Area", "Central Market", "Semien"],
+    "Jimma": ["Abay", "Bishoftu", "Central Market", "University Area", "Airport Road"],
+    "Gondar": ["Fasil", "Azezo", "Central Market", "University Area", "Maraki"],
+    "Adama": ["Central Market", "Industrial Zone", "University Area", "Lake Side", "Airport Road"],
+    "Dessie": ["Central Market", "University Area", "Industrial Zone", "Airport Road", "Lake Side"],
+    "Harar": ["Jugol", "New Town", "Industrial Zone", "University Area", "Airport Road"]
 };
 
 const issueSchema = new mongoose.Schema({

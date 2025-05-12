@@ -48,7 +48,7 @@ fun HomeScreen(
     val profileImageUrl by viewModel.profileImageUrl.collectAsState()
 
     // Prepare the full image URL
-    val baseUrl = "http://192.168.34.57:5500"
+    val baseUrl = "http://192.168.39.252:5500"
     val fullProfileImageUrl = if (profileImageUrl?.startsWith("/") == true) {
         baseUrl + profileImageUrl
 

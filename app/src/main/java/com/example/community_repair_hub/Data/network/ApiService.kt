@@ -76,6 +76,12 @@ interface ApiService {
     @POST("report")
     suspend fun reportIssue(@Body issue: Map<String, String>): ApiResponse<Map<String, Any>>
 
+    @GET("citizens/issues/{id}")
+    suspend fun getIssueById(@Path("id") id: String): Response<IssueResponse>
+
+    @PUT("issues/update")
+    suspend fun updateIssueStatus(@Body updateRequest: UpdateIssueRequest): Response<IssueResponse>
+
     companion object {
         private const val BASE_URL = "http://10.0.2.2:3000/" // For Android Emulator
         // private const val BASE_URL = "http://localhost:3000/" // For local testing

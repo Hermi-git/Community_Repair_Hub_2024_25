@@ -3,6 +3,7 @@ package com.example.community_repair_hub.data.network.repository
 import android.util.Log
 import com.example.community_repair_hub.data.network.RetrofitClient
 import com.example.community_repair_hub.data.network.model.IssueResponse
+import com.example.community_repair_hub.data.network.model.UpdateIssueRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -61,6 +62,35 @@ class IssueRepository {
                 Result.success(response.data)
             } else {
                 Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getIssueById(id: String): Result<IssueResponse> = withContext(Dispatchers.IO) {
+        try {
+            Log.d("IssueRepository", "Fetching issue with id: $id")
+            val response = apiService.getIssueById(id)
+            Log.d("IssueRepository", "Response code: ${response.code()}, body: ${response.body()}, error: ${response.errorBody()?.string()}")
+            if (response.isSuccessful) {
+                response.body()?.let { Result.success(it) } ?: Result.failure(Exception("No data"))
+            } else {
+                Result.failure(Exception("Failed to fetch issue"))
+            }
+        } catch (e: Exception) {
+            Log.e("IssueRepository", "Error fetching issue", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateIssueStatus(request: UpdateIssueRequest): Result<IssueResponse> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.updateIssueStatus(request)
+            if (response.isSuccessful) {
+                response.body()?.let { Result.success(it) } ?: Result.failure(Exception("No data"))
+            } else {
+                Result.failure(Exception("Failed to update issue"))
             }
         } catch (e: Exception) {
             Result.failure(e)
