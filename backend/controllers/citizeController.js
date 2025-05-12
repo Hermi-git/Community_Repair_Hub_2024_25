@@ -134,7 +134,7 @@ export const searchByLocation = async (req, res) => {
         res.status(500).json({ success: false, message: "Server Error!", error: error.message });
     }
 };
-// Get a single issue by ID
+
 export const getIssueById = async (req, res) => {
     try {
         const { id } = req.params;
