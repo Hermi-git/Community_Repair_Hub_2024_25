@@ -147,7 +147,7 @@ export const getIssueById = async (req, res) => {
             });
         }
 
-        return res.status(200).json(issue); // Return the issue object directly
+        return res.status(200).json(issue);
     } catch (error) {
         res.status(500).json({
             success: false,
