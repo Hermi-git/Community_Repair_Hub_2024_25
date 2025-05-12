@@ -1,72 +1,63 @@
 import mongoose from "mongoose";
 
+// Define city-specific areas mapping
 const citySpecificAreas = {
-  "Addis Ababa": ["Bole", "Lideta", "Piazza", "Arat Kilo", "Megenagna", "Mexico", "Sar Bet", "Summit", "CMC"],
-  "Adama": ["Dabe Laga", "Fincha’a", "Geda", "Loke", "Boku", "Bulbula"],
-  "Bahir Dar": ["Kebel 03", "Kebel 14", "Shumabo", "Tana", "St. Giorgis"],
-  "Mekelle": ["Hawelti", "Adi Haki", "Quiha", "Aynalem", "Enda Mariam"],
-  "Hawassa": ["Tabor", "Piassa", "Dume", "Misrak", "Bahir Dar Sefer"],
-  "Jigjiga": ["Ayrub", "Kebele 01", "Kebele 03", "Barwaaqo", "Gurmad"],
-  "Assosa": ["Homosha", "Mandura", "Menge", "Debre Zeit", "Yaso"],
-  "Gambella": ["Itang", "Abobo", "Pinyudo", "Jikawo", "Makuey"],
-  "Semera": ["Jegol", "Aboker", "Sofi", "Shenkor", "Hakim", "Dubti", "Logiya", "Awash", "Gawane", "Dewe"]
+    "Mumbai": ["Andheri", "Bandra", "Colaba", "Dadar", "Juhu"],
+    "Delhi": ["Connaught Place", "Dwarka", "Hauz Khas", "Rohini", "Saket"],
+    "Bangalore": ["Indiranagar", "Koramangala", "MG Road", "Whitefield", "Electronic City"],
+    "Chennai": ["Adyar", "Anna Nagar", "T Nagar", "Velachery", "Mylapore"],
+    "Kolkata": ["Park Street", "Salt Lake", "New Town", "Howrah", "Dum Dum"]
 };
 
 const issueSchema = new mongoose.Schema({
-  category: {
-    type: String,
-    required: true,
-  },
-  locations: {
-    city: {
-      type: String,
-      required: true,
-      enum: Object.keys(citySpecificAreas),
+    category: {
+        type: String,
+        required: true,
     },
-    specificArea: {
-      type: String,
-      required: true,
-      validate: {
-        validator: function (area) {
-          return citySpecificAreas[this.locations.city]?.includes(area);
+    locations: {
+        city: {
+            type: String,
+            enum: Object.keys(citySpecificAreas),
+            required: true
         },
-        message: (props) => `${props.value} is not a valid area for the selected city.`,
-      },
+        specificArea: {
+            type: String,
+            required: true
+        }
     },
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  issueDate: {
-    type: Date,
-    required: true,
-},
-  status: {
-    type: String,
-    enum: ["In Progress", "Resolved", "Unresolved"],
-    default: "Unresolved",
-  },
-  imageURL: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+    description: {
+        type: String,
+        required: true,
+    },
+    issueDate: {
+        type: Date,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ["In Progress", "Resolved", "Unresolved"],
+        default: "Unresolved",
+    },
+    imageURL: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 // Middleware to validate city and area relationship
-issueSchema.pre("validate", function (next) {
-  if (!citySpecificAreas[this.locations.city]?.includes(this.locations.specificArea)) {
-    this.invalidate("locations.specificArea", `${this.locations.specificArea} is not a valid area for the selected city.`);
-  }
-  next();
+issueSchema.pre("validate", function(next) {
+    if (!citySpecificAreas[this.locations.city]?.includes(this.locations.specificArea)) {
+        this.invalidate("locations.specificArea", `${this.locations.specificArea} is not a valid area for the selected city.`);
+    }
+    next();
 });
 
 const Issues = mongoose.model("issues", issueSchema);
