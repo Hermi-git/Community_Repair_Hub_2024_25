@@ -41,7 +41,7 @@ const fileFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-// Error handling middleware
+
 const handleMulterError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
