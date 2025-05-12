@@ -68,7 +68,7 @@ dependencies {
     implementation(libs.squareup.retrofit2.converter.gson)
     implementation(libs.squareup.okhttp3)
 
-    // Coroutines
+    
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
