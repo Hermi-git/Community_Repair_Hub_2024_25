@@ -1,6 +1,7 @@
 package com.example.community_repair_hub.data.network
 
 import com.example.community_repair_hub.data.network.model.*
+import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -13,12 +14,22 @@ import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
 interface ApiService {
+    @Multipart
     @POST("users/register")
-    suspend fun signup(@Body request: SignupRequest): Response<SignupResponse>
+    suspend fun signup(
+        @Part("name") name: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("role") role: RequestBody,
+        @Part("region") region: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part image: MultipartBody.Part? = null
+    ): Response<SignupResponse>
 
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
-
+    @GET("/users/profile")
+    suspend fun getProfile(): Response<UserData>
     @POST("users/logout")
     suspend fun logout(): Response<LogoutResponse>
 
@@ -37,13 +48,7 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<ResponseBody>
 
-    @Multipart
-    @POST("api/reports")
-    suspend fun submitReport(
-        @Part("title") title: RequestBody,
-        @Part("description") description: RequestBody,
-        @Part image: MultipartBody.Part
-    ): Response<ResponseBody>
+
 
     // Citizen endpoints
     @GET("citizens/issues")
@@ -54,6 +59,19 @@ interface ApiService {
 
     @GET("issues/location")
     suspend fun searchByLocation(@Query("location") location: String): ApiResponse<List<IssueResponse>>
+
+
+    @Multipart
+    @POST("citizens/report")
+    suspend fun reportIssue(
+        @Part image: MultipartBody.Part,
+        @Part("category") category: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part("specificAddress") specificAddress: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("issueDate") issueDate: RequestBody
+    ): Response<JsonObject>
+
 
     @POST("report")
     suspend fun reportIssue(@Body issue: Map<String, String>): ApiResponse<Map<String, Any>>

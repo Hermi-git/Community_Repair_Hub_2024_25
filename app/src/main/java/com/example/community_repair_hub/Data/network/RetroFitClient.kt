@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     // Use your computer's IP address instead of localhost
-    private const val BASE_URL = "http://10.5.199.23:5500/" // Replace with your computer's IP address
-    // private const val BASE_URL = "http://10.0.2.2:5500/" // For Android Emulator
-    // private const val BASE_URL = "http://localhost:5500/" // For local testing
+    private const val BASE_URL = "http://192.168.34.57:5500/" // Replace with your computer's IP address
+
 
     val instance: ApiService by lazy {
         Log.d("RetrofitClient", "Initializing Retrofit with BASE_URL: $BASE_URL")
