@@ -134,3 +134,25 @@ export const searchByLocation = async (req, res) => {
         res.status(500).json({ success: false, message: "Server Error!", error: error.message });
     }
 };
+// Get a single issue by ID
+export const getIssueById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const issue = await Issues.findById(id);
+
+        if (!issue) {
+            return res.status(404).json({
+                success: false,
+                message: "Issue not found"
+            });
+        }
+
+        return res.status(200).json(issue); // Return the issue object directly
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch issue",
+            error: error.message
+        });
+    }
+};
