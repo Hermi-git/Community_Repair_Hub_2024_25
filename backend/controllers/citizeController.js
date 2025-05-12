@@ -21,7 +21,7 @@ export const getIssues = async (req, res) => {
 };
 
 
-// backend/controllers/citizenController.js
+
 export const reportIssue = async (req, res) => {
     try {
         console.log('Request body:', req.body);
