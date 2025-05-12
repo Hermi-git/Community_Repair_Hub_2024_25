@@ -44,7 +44,7 @@ export const reportIssue = async (req, res) => {
             });
         }
 
-        // Log the file information
+
         console.log('Uploaded file:', {
             filename: req.file.filename,
             path: req.file.path,
